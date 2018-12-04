@@ -18,8 +18,8 @@
             <button :disabled="select_lectures" @click="toggle">선택 강의</button>
         </div>
         <br>
-        <PinSearchForm v-if="pin_lectures"></PinSearchForm>
-        <SelectSearchForm v-if="select_lectures"></SelectSearchForm>
+        <PinSearchForm v-show="pin_lectures" :bus="bus"></PinSearchForm>
+        <SelectSearchForm v-show="select_lectures" :bus="bus"></SelectSearchForm>
     </div>
 </template>
 
@@ -30,6 +30,7 @@
 
     export default {
         name: "OptionSelect",
+        props: ['bus'],
         components:{
             PinSearchForm,
             SelectSearchForm
