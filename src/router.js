@@ -3,6 +3,8 @@ import Router from 'vue-router'
 
 //Components
 import OptionSelect from './components/OptionSelect'
+import TimeTable from './components/TimeTable'
+import OptionSelectLayout from './components/OptionSelectLayout'
 
 Vue.use(Router);
 
@@ -12,8 +14,13 @@ export default new Router({
     routes: [
         {
             path: '/',
-            name: 'OptionSelect',
-            component: OptionSelect
+            name: 'OptionSelectLayout',
+            component: OptionSelectLayout
+        },
+        {
+            path: '/result',
+            name: 'TimeTable',
+            component: TimeTable
         }
     ]
 })
