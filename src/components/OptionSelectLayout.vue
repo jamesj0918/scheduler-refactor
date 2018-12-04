@@ -1,11 +1,12 @@
 <template>
     <div id="OptionSelectLayoutWrap">
-        <TimeTable></TimeTable>
-        <OptionSelect></OptionSelect>
+        <TimeTable :bus="bus"></TimeTable>
+        <OptionSelect :bus="bus"></OptionSelect>
     </div>
 </template>
 
 <script>
+    import Vue from 'vue'
     import TimeTable from './TimeTable'
     import OptionSelect from "./OptionSelect";
     export default {
@@ -13,6 +14,11 @@
         components:{
             TimeTable,
             OptionSelect
+        },
+        data(){
+            return{
+                bus: new Vue()
+            }
         }
     }
 </script>

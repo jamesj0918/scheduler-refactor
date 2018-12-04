@@ -41,6 +41,7 @@
 
     export default {
         name: "TimeTable",
+        props: ['bus'],
         data(){
             return{
                 timetable_data: [],
@@ -105,7 +106,7 @@
             }
         },
         mounted() {
-            axios.get('lectures/query/?timetable=mon:0900:1200,tue:0900:1200,' +
+            /*axios.get('lectures/query/?timetable=mon:0900:1200,tue:0900:1200,' +
                 'wed:0900:1200,thu:0900:1200,fri:0900:1200&selected=001725&fixed=1606,1621,1646')
                 .then((response)=>{
                     this.timetable_data = response.data;
@@ -113,7 +114,7 @@
                         let lecture = this.timetable_data[0][j];
                         this.add_lecture_to_timetable(lecture);
                     }
-                });
+                });*/
             this.$refs["1_1"][0].style.borderRadius = "10px 0 0 0";
             this.$refs["5_1"][0].style.borderRadius = "0 10px 0 0";
             this.$refs["5_24"][0].style.borderRadius = "0 0 10px 0";
@@ -130,6 +131,7 @@
             for(let i=0; i<this.timetable_data.length; i++){
                 this.fill_timetable(this.timetable_data[i].day_index, this.timetable_data[i].time_index);
             }
+            this.bus.$on('add_lecture', this.add_lecture_to_timetable);
         },
         updated(){
             if (this.timetable_data){

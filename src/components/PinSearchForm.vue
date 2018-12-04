@@ -11,13 +11,13 @@
                                 <i style="margin-top: 6px; cursor: pointer" @click="search" class="fas fa-search"></i>
                             </div>
                             <div class="LectureContent">
-                                <div class="LectureData" v-for="lecture in lecture_data">
+                                <div class="LectureData" @click="add_lecture(lecture)" v-for="lecture in lecture_data">
                                     <div class="LectureTitle">{{lecture.title}}</div>
                                     <div class="LectureInfo">
                                         {{lecture.professor}}, {{lecture.classroom}}
                                     </div>
                                     <div class="LectureTimeWrap" >
-                                        <div class="LectureTime" v-for="time in lecture.timetable">
+                                        <div class="LectureTime" v-for="time in lecture.timetable.slice().reverse()">
                                             {{time.day}} {{time.start.split(":")[0]+":"+time.start.split(":")[1]}}~{{time.end.split(":")[0]+":"+time.end.split(":")[1]}}
                                         </div>
                                     </div>
@@ -44,6 +44,7 @@
         components:{
             Category
         },
+        props: ['bus'],
         data(){
             return{
                 query: '',
@@ -55,8 +56,10 @@
                 axios.get('lectures/search/?search='+this.query)
                     .then((response)=>{
                         this.lecture_data = response.data.results;
-                        console.log(response.data);
                     })
+            },
+            add_lecture(lecture){
+                this.bus.$emit('add_lecture', lecture);
             }
         }
     }
