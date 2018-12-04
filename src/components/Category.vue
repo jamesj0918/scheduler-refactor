@@ -29,7 +29,7 @@
                 lecture_count:[]
             }
         },
-        mounted() {
+            mounted() {
             let search_url;
             if (this.search_option === 'select'){
                 search_url = 'unique';
@@ -43,7 +43,6 @@
                         this.lecture_count.push({category: this.categories[i], count: response.data.count});
                     })
             }
-            console.log(this.lecture_count);
         }
     }
 </script>

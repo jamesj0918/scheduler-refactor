@@ -11,7 +11,7 @@
                                 <i style="margin-top: 6px; cursor: pointer" @click="search" class="fas fa-search"></i>
                             </div>
                             <div class="LectureContent">
-                                <div class="LectureData" v-for="(lecture, i) in lecture_data">
+                                <div class="LectureData" v-for="lecture in lecture_data">
                                     <div class="LectureTitle">{{lecture.title}}</div>
                                     <div class="LectureInfo">
                                         {{lecture.code}}, {{lecture.point}}학점
@@ -50,9 +50,9 @@
                 axios.get('lectures/unique/?search='+this.query)
                     .then((response)=>{
                         this.lecture_data = response.data.results;
-                        console.log(response.data);
                     })
-            }
+            },
+
         }
     }
 </script>
