@@ -9,11 +9,11 @@
 export default {
   name: 'app',
   components: {
-
   }
 }
-</script>
-
+</script>]
 <style>
-
+    html{
+        background-color: rgb(244,244,244);
+    }
 </style>
