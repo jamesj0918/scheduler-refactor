@@ -61,10 +61,24 @@
                 if (breaktime_index === -1) this.breaktime_data.push(time_converter.index_to_single_time({day_index, time_index}));
                 else this.breaktime_data.splice(breaktime_index, 1);
 
-                this.fill_timetable(day_index, time_index);
+                this.fill_breaktime(day_index, time_index);
 
             },
-            fill_timetable(day_index, time_index){
+            fill_lecture(day_index, time_index){
+                 const ref_index = day_index+"_"+time_index;
+                 if (this.$refs[ref_index][0].style.backgroundColor === "rgb(190, 190, 190)") {
+                     alert('이미 해당 시간에 시간표가 존재합니다.');
+                     throw "already in table";
+                 }
+                 else {
+                     this.$refs[ref_index][0].style.backgroundColor = "rgb(190, 190, 190)";
+                     this.$refs[ref_index][0].style.borderBottom = "none";
+                     this.$refs[ref_index][0].style.borderTop = "none";
+                     this.$refs[ref_index][0].style.height = "19px";
+                 }
+            },
+            fill_breaktime(day_index, time_index){
+
                 const ref_index = day_index+"_"+time_index;
                 if (this.$refs[ref_index][0].style.backgroundColor === "rgb(190, 190, 190)") {
                     this.$refs[ref_index][0].style.backgroundColor = "white";
@@ -93,7 +107,12 @@
                 for (let i=0; i<lecture.timetable.length; i++){
                     let location = time_converter.time_to_location(lecture.timetable[i].day, lecture.timetable[i].start, lecture.timetable[i].end);
                     for (let l=location[0].start_time_index; l<=location[1].end_time_index; l++){
-                        this.fill_timetable(location[0].day_index, l);
+                        try {
+                            this.fill_lecture(location[0].day_index, l);
+                        }
+                        catch {
+                            return;
+                        }
                     }
                     let start_ref_index = location[0].day_index+"_"+location[0].start_time_index;
                     let end_ref_index = location[1].day_index+"_"+location[1].end_time_index;
@@ -102,6 +121,7 @@
                     this.$refs[start_ref_index][0].style.color = "white";
                     this.$refs[end_ref_index][0].style.borderBottom = "solid 1px rgb(226, 226, 226)";
                     this.$refs[end_ref_index][0].style.height = "18px";
+
                 }
             }
         },
