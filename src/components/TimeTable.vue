@@ -37,7 +37,6 @@
 
 <script>
     import time_converter from '../time_converter'
-    import axios from 'axios'
 
     export default {
         name: "TimeTable",
@@ -50,37 +49,57 @@
         },
         methods:{
             select_breaktime(day_index, time_index){
+                const breaktime = time_converter.index_to_single_time({day_index, time_index});
                 let breaktime_index = -1;
                 for (let i=0; i<this.breaktime_data.length; i++){
-                    if (this.breaktime_data[i] === time_converter.index_to_single_time({day_index, time_index})){
+                    if (this.breaktime_data[i].day === breaktime.day &&
+                        this.breaktime_data[i].start === breaktime.start &&
+                        this.breaktime_data[i].end === breaktime.end){
                         breaktime_index = i;
                         break;
                     }
                 }
 
-                if (breaktime_index === -1) this.breaktime_data.push(time_converter.index_to_single_time({day_index, time_index}));
+                if (breaktime_index === -1) this.breaktime_data.push(breaktime);
                 else this.breaktime_data.splice(breaktime_index, 1);
 
                 this.fill_breaktime(day_index, time_index);
-
             },
             fill_lecture(day_index, time_index){
                  const ref_index = day_index+"_"+time_index;
                  if (this.$refs[ref_index][0].style.backgroundColor === "rgb(190, 190, 190)") {
-                     alert('이미 해당 시간에 시간표가 존재합니다.');
-                     throw "already in table";
-                 }
+                    this.$refs[ref_index][0].style.backgroundColor = "white";
+                    if (time_index % 2 === 0) {
+                        if (time_index === 24) {
+                            this.$refs[ref_index][0].style.borderBottom = "solid 2px rgb(226, 226, 226)";
+                        }
+                        else this.$refs[ref_index][0].style.borderBottom = "solid 1px rgb(226, 226, 226)";
+                    }
+                    else {
+                        if (time_index === 1) {
+                            this.$refs[ref_index][0].style.borderTop = "solid 2px rgb(226, 226, 226)";
+                        }
+                        else this.$refs[ref_index][0].style.borderTop = "solid 1px rgb(226, 226, 226)";
+                    }
+                    this.$refs[ref_index][0].style.height = "18px";
+                }
                  else {
-                     this.$refs[ref_index][0].style.backgroundColor = "rgb(190, 190, 190)";
-                     this.$refs[ref_index][0].style.borderBottom = "none";
-                     this.$refs[ref_index][0].style.borderTop = "none";
-                     this.$refs[ref_index][0].style.height = "19px";
-                 }
+                    this.$refs[ref_index][0].style.backgroundColor = "rgb(190, 190, 190)";
+                    this.$refs[ref_index][0].style.borderBottom = "none";
+                    this.$refs[ref_index][0].style.borderTop = "none";
+                    this.$refs[ref_index][0].style.height = "19px";
+                }
             },
-            fill_breaktime(day_index, time_index){
-
+            check_filled(day_index, time_index){
                 const ref_index = day_index+"_"+time_index;
                 if (this.$refs[ref_index][0].style.backgroundColor === "rgb(190, 190, 190)") {
+                    alert('이미 해당 시간에 시간표가 존재합니다.');
+                    throw "already in table";
+                }
+            },
+            fill_breaktime(day_index, time_index){
+                const ref_index = day_index+"_"+time_index;
+                if (this.$refs[ref_index][0].style.backgroundColor === "rgb(160, 160, 160)") {
                     this.$refs[ref_index][0].style.backgroundColor = "white";
                     if (time_index % 2 === 0) {
                         if (time_index === 24) {
@@ -97,7 +116,7 @@
                     this.$refs[ref_index][0].style.height = "18px";
                 }
                 else {
-                    this.$refs[ref_index][0].style.backgroundColor = "rgb(190, 190, 190)";
+                    this.$refs[ref_index][0].style.backgroundColor = "rgb(160, 160, 160)";
                     this.$refs[ref_index][0].style.borderBottom = "none";
                     this.$refs[ref_index][0].style.borderTop = "none";
                     this.$refs[ref_index][0].style.height = "19px";
@@ -121,20 +140,58 @@
                     this.$refs[start_ref_index][0].style.color = "white";
                     this.$refs[end_ref_index][0].style.borderBottom = "solid 1px rgb(226, 226, 226)";
                     this.$refs[end_ref_index][0].style.height = "18px";
-
                 }
+            },
+            remove_lecture_from_timetable(lecture){
+                for (let i=0; i<lecture.timetable.length; i++){
+                    let location = time_converter.time_to_location(lecture.timetable[i].day, lecture.timetable[i].start, lecture.timetable[i].end);
+                    for (let l=location[0].start_time_index; l<=location[1].end_time_index; l++){
+                        try {
+                            this.fill_lecture(location[0].day_index, l);
+                        }
+                        catch {
+                            return;
+                        }
+                    }
+                    let start_ref_index = location[0].day_index+"_"+location[0].start_time_index;
+                    let end_ref_index = location[1].day_index+"_"+location[1].end_time_index;
+                    let end_time_index = location[1].end_time_index;
+                    this.$refs[start_ref_index][0].innerHTML = "";
+                    this.$refs[end_ref_index][0].style.height = "18px";
+                    if (end_time_index % 2 === 1){
+                        this.$refs[end_ref_index][0].style.borderBottom = "none";
+                    }
+                    else{
+                        if (end_time_index === 24) this.$refs[end_ref_index][0].style.borderBottom = "solid 2px rgb(226, 226, 226)";
+                        else this.$refs[end_ref_index][0].style.borderBottom = "solid 1px rgb(226, 226, 226)";
+                    }
+                }
+            },
+            add_lecture(lecture){
+                for (let i=0; i<lecture.timetable.length; i++){
+                    let location = time_converter.time_to_location(lecture.timetable[i].day, lecture.timetable[i].start, lecture.timetable[i].end);
+                    for (let l=location[0].start_time_index; l<=location[1].end_time_index; l++){
+                        try {
+                            this.check_filled(location[0].day_index, l);
+                        }
+                        catch {
+                            return;
+                        }
+                    }
+                }
+                this.bus.$emit('timetable_not_collided', lecture);
+                this.timetable_data.push(lecture);
+                this.add_lecture_to_timetable(lecture);
+            },
+            remove_lecture(lecture){
+                const timetable_index = this.timetable_data.indexOf(lecture);
+                if (timetable_index === -1) alert('옳바르지 않은 접근입니다.');
+                else this.timetable_data.splice(timetable_index, 1);
+                this.remove_lecture_from_timetable(lecture);
+                console.log(this.timetable_data);
             }
         },
         mounted() {
-            /*axios.get('lectures/query/?timetable=mon:0900:1200,tue:0900:1200,' +
-                'wed:0900:1200,thu:0900:1200,fri:0900:1200&selected=001725&fixed=1606,1621,1646')
-                .then((response)=>{
-                    this.timetable_data = response.data;
-                    for (let j=0; j<this.timetable_data[0].length; j++){
-                        let lecture = this.timetable_data[0][j];
-                        this.add_lecture_to_timetable(lecture);
-                    }
-                });*/
             this.$refs["1_1"][0].style.borderRadius = "10px 0 0 0";
             this.$refs["5_1"][0].style.borderRadius = "0 10px 0 0";
             this.$refs["5_24"][0].style.borderRadius = "0 0 10px 0";
@@ -148,17 +205,8 @@
                 let tmp = 5+"_"+j;
                 this.$refs[tmp][0].style.borderRight = "solid 2px rgb(226, 226, 226)";
             }
-            for(let i=0; i<this.timetable_data.length; i++){
-                this.fill_timetable(this.timetable_data[i].day_index, this.timetable_data[i].time_index);
-            }
-            this.bus.$on('add_lecture', this.add_lecture_to_timetable);
-        },
-        updated(){
-            if (this.timetable_data){
-                for(let i=0; i<this.timetable_data.length; i++){
-                    this.fill_timetable(this.timetable_data[i].day_index, this.timetable_data[i].time_index);
-                }
-            }
+            this.bus.$on('add_lecture', this.add_lecture);
+            this.bus.$on('remove_lecture', this.remove_lecture);
         }
     }
 </script>
