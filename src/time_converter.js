@@ -19,16 +19,17 @@ export default ({
         else if(start === "14:30:00") {start_time_index = 12;}
         else if(start === "15:00:00") {start_time_index = 13;}
         else if(start === "15:30:00") {start_time_index = 14;}
-        else if(start === "16:30:00") {start_time_index = 15;}
-        else if(start === "17:00:00") {start_time_index = 16;}
-        else if(start === "17:30:00") {start_time_index = 17;}
-        else if(start === "18:00:00") {start_time_index = 18;}
-        else if(start === "18:30:00") {start_time_index = 19;}
-        else if(start === "19:00:00") {start_time_index = 20;}
-        else if(start === "19:30:00") {start_time_index = 21;}
-        else if(start === "20:00:00") {start_time_index = 22;}
-        else if(start === "20:30:00") {start_time_index = 23;}
-        else if(start === "21:00:00") {start_time_index = 24;}
+        else if(start === "16:00:00") {start_time_index = 15;}
+        else if(start === "16:30:00") {start_time_index = 16;}
+        else if(start === "17:00:00") {start_time_index = 17;}
+        else if(start === "17:30:00") {start_time_index = 18;}
+        else if(start === "18:00:00") {start_time_index = 19;}
+        else if(start === "18:30:00") {start_time_index = 20;}
+        else if(start === "19:00:00") {start_time_index = 21;}
+        else if(start === "19:30:00") {start_time_index = 22;}
+        else if(start === "20:00:00") {start_time_index = 23;}
+        else if(start === "20:30:00") {start_time_index = 24;}
+        else if(start === "21:00:00") {start_time_index = 25;}
 
     if(end === "09:00:00") {end_time_index = 1;}
     else if(end === "09:30:00") {end_time_index = 2;}
@@ -44,16 +45,17 @@ export default ({
     else if(end === "14:30:00") {end_time_index = 12;}
     else if(end === "15:00:00") {end_time_index = 13;}
     else if(end === "15:30:00") {end_time_index = 14;}
-    else if(end === "16:30:00") {end_time_index = 15;}
-    else if(end === "17:00:00") {end_time_index = 16;}
-    else if(end === "17:30:00") {end_time_index = 17;}
-    else if(end === "18:00:00") {end_time_index = 18;}
-    else if(end === "18:30:00") {end_time_index = 19;}
-    else if(end === "19:00:00") {end_time_index = 20;}
-    else if(end === "19:30:00") {end_time_index = 21;}
-    else if(end === "20:00:00") {end_time_index = 22;}
-    else if(end === "20:30:00") {end_time_index = 23;}
-    else if(end === "21:00:00") {end_time_index = 24;}
+    else if(end === "16:00:00") {end_time_index = 15;}
+    else if(end === "16:30:00") {end_time_index = 16;}
+    else if(end === "17:00:00") {end_time_index = 17;}
+    else if(end === "17:30:00") {end_time_index = 18;}
+    else if(end === "18:00:00") {end_time_index = 19;}
+    else if(end === "18:30:00") {end_time_index = 20;}
+    else if(end === "19:00:00") {end_time_index = 21;}
+    else if(end === "19:30:00") {end_time_index = 22;}
+    else if(end === "20:00:00") {end_time_index = 23;}
+    else if(end === "20:30:00") {end_time_index = 24;}
+    else if(end === "21:00:00") {end_time_index = 25;}
 
 
 
