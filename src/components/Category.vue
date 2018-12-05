@@ -12,7 +12,7 @@
     import axios from 'axios'
     export default {
         name: "Category",
-        props:["search_option", "bus"],
+        props:["select_option", "bus"],
         data(){
             return{
                 categories:[
@@ -31,7 +31,7 @@
         },
         mounted() {
             let search_url;
-            if (this.search_option === 'select'){
+            if (this.select_option === 'select'){
                 search_url = 'unique';
             }
             else{
