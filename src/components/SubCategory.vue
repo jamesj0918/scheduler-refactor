@@ -13,7 +13,7 @@
             </div>
         </div>
         <div class="SubCategoryList">
-            <div class="SubCategoryWrap" v-for="data in subcategory_count">
+            <div @click="subcategory_to_list(data.subcategory)" class="SubCategoryWrap" v-for="data in subcategory_count">
                 <div class="SubCategoryName">{{data.subcategory}}</div>
                 <div class="NextIcon"><i class="fas fa-chevron-right"></i></div>
                 <div class="SubCategoryCount">{{data.count}}개의 강의</div>
@@ -26,7 +26,7 @@
     import axios from 'axios'
     export default {
         name: "SubCategory",
-        props: ["category", "bus"],
+        props: ["category", "bus", "select_option"],
         data(){
             return{
                 subcategories:{
@@ -47,20 +47,30 @@
         methods:{
             subcategory_to_category(){
                 this.bus.$emit('subcategory_to_category');
+            },
+            subcategory_to_list(subcategory){
+                this.bus.$emit('subcategory_to_list', subcategory);
             }
         },
         mounted(){
+            let search_url;
+            if (this.select_option === 'select'){
+                search_url = 'unique';
+            }
+            else{
+                search_url = 'search';
+            }
+
             const category_modified = this.category.replace("/","_").replace("/","_");
-            console.log('asd');
             for(let i=0; i<this.subcategories[category_modified].length; i++){
-                axios.get('lectures/search/?category='+this.category+'&subcategory='+this.subcategories[category_modified][i])
+                axios.get('lectures/'+search_url+'/?category='+this.category+'&subcategory='+this.subcategories[category_modified][i])
                     .then((response)=>{
                         this.subcategory_count.push({
                             subcategory: this.subcategories[category_modified][i],
                             count : response.data.count});
                     })
             }
-            axios.get('lectures/search/?category='+this.category)
+            axios.get('lectures/'+search_url+'/?category='+this.category)
                 .then((response)=>{
                     this.category_count = response.data.count;
                 })
