@@ -1,6 +1,6 @@
 <template>
     <div id="SelectSearchTabWrap">
-        <div class="CategoryWrap" v-for="(data, index) in lecture_count" :key="index">
+        <div class="CategoryWrap" @click="push_layer(data.category)" v-for="(data, index) in lecture_count" :key="index">
             <div class="CategoryName">{{data.category}}</div>
             <div class="NextIcon"><i class="fas fa-chevron-right"></i></div>
             <div class="CategoryCount">{{data.count}}개의 강의</div>
@@ -12,7 +12,7 @@
     import axios from 'axios'
     export default {
         name: "Category",
-        props:["search_option"],
+        props:["search_option", "bus"],
         data(){
             return{
                 categories:[
@@ -29,7 +29,7 @@
                 lecture_count:[]
             }
         },
-            mounted() {
+        mounted() {
             let search_url;
             if (this.search_option === 'select'){
                 search_url = 'unique';
@@ -42,6 +42,11 @@
                     .then((response)=>{
                         this.lecture_count.push({category: this.categories[i], count: response.data.count});
                     })
+            }
+        },
+        methods:{
+            push_layer(category){
+                this.bus.$emit('category_to_subcategory', category);
             }
         }
     }

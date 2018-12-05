@@ -1,6 +1,5 @@
 <template>
     <div>
-        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
         <div class="SearchForm">
             <vue-tabs>
                 <v-tab icon="fas fa-search" title="">
@@ -28,7 +27,8 @@
                 </v-tab>
                 <v-tab icon="fas fa-tags" title="">
                     <div class="TabContent">
-                        <Category :search_option="'pin'"></Category>
+                        <Category v-if="layer === 0" :search_option="'pin'" :bus="bus"></Category>
+                        <SubCategory v-if="layer === 1" :bus="bus" :category="this.push_category"></SubCategory>
                     </div>
                 </v-tab>
             </vue-tabs>
@@ -39,9 +39,11 @@
 <script>
     import axios from 'axios'
     import Category from './Category'
+    import SubCategory from "./SubCategory";
     export default {
         name: "PinSearchForm",
         components:{
+            SubCategory,
             Category
         },
         props: ['bus'],
@@ -49,6 +51,8 @@
             return{
                 query: '',
                 lecture_data: [],
+                layer: 0,
+                push_category: ''
             }
         },
         methods:{
@@ -60,7 +64,19 @@
             },
             add_lecture(lecture){
                 this.bus.$emit('add_lecture', lecture);
+            },
+            category_to_subcategory(category) {
+                this.push_category = category;
+                this.layer++;
+            },
+            subcategory_to_category(){
+                this.push_category = "";
+                this.layer--;
             }
+        },
+        mounted() {
+            this.bus.$on('category_to_subcategory', this.category_to_subcategory);
+            this.bus.$on('subcategory_to_category', this.subcategory_to_category);
         }
     }
 </script>
