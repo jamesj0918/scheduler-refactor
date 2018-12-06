@@ -19,8 +19,15 @@
                     {{lecture.professor}}, {{lecture.classroom}}
                 </div>
                 <div class="LectureTimeWrap" >
-                    <div class="LectureTime" v-for="time in lecture.timetable.slice().reverse()">
-                        {{time.day}} {{time.start.split(":")[0]+":"+time.start.split(":")[1]}}~{{time.end.split(":")[0]+":"+time.end.split(":")[1]}}
+                    <div v-if="lecture.timetable" >
+                        <div class="LectureTime" v-for="time in lecture.timetable.slice().reverse()">
+                            {{time.day}} {{time.start.split(":")[0]+":"+time.start.split(":")[1]}}~{{time.end.split(":")[0]+":"+time.end.split(":")[1]}}
+                        </div>
+                    </div>
+                    <div v-else>
+                        <div class="LectureTime">
+                            온라인
+                        </div>
                     </div>
                 </div>
             </div>

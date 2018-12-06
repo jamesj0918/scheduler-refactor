@@ -100,6 +100,7 @@
             add_lecture_to_list(lecture){
                 if (this.lecture_data.indexOf(lecture) === -1) this.lecture_data.push(lecture);
                 else alert('이미 추가된 강의입니다!');
+                this.bus.$emit('add_selected_lecture_points', lecture);
             },
             remove_lecture_from_list(lecture){
                 const lecture_index = this.lecture_data.indexOf(lecture);

@@ -44,21 +44,23 @@
                     </div>
                 </v-tab>
             </vue-tabs>
-            <div class="LectureData" @click="remove_lecture(lecture)" v-for="lecture in lecture_data">
-                <div class="MinusButton">
-                    <i class="fas fa-minus-circle"></i>
-                </div>
-                <div class="LectureTitle">{{lecture.title}}</div>
-                <div class="LectureInfo">
-                    {{lecture.professor}}, {{lecture.classroom}}
-                </div>
-                <div class="LectureTimeWrap" >
-                    <div class="LectureTime" v-for="time in lecture.timetable.slice().reverse()">
-                        {{time.day}} {{time.start.split(":")[0]+":"+time.start.split(":")[1]}}~{{time.end.split(":")[0]+":"+time.end.split(":")[1]}}
+            <div class="ListContent">
+                <div class="LectureData" @click="remove_lecture(lecture)" v-for="lecture in lecture_data">
+                    <div class="MinusButton">
+                        <i class="fas fa-minus-circle"></i>
+                    </div>
+                    <div class="LectureTitle">{{lecture.title}}</div>
+                    <div class="LectureInfo">
+                        {{lecture.professor}}, {{lecture.classroom}}
+                    </div>
+                    <div class="LectureTimeWrap" >
+                        <div class="LectureTime" v-for="time in lecture.timetable.slice().reverse()">
+                            {{time.day}} {{time.start.split(":")[0]+":"+time.start.split(":")[1]}}~{{time.end.split(":")[0]+":"+time.end.split(":")[1]}}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+            </div>
     </div>
 </template>
 
@@ -220,5 +222,12 @@
         margin-top: 20px;
         margin-right: 15px;
         color: rgb(85, 85, 85);
+    }
+
+    .ListContent{
+        display: inline-block;
+        height: 170px;
+        width: 100%;
+        overflow-y: scroll;
     }
 </style>
