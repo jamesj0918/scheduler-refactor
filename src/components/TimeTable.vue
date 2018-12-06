@@ -26,7 +26,6 @@
                 <div class="column"
                     v-for="time_index in 24"
                     :ref="day_index+'_'+time_index"
-                    @click="select_breaktime(day_index, time_index)"
                     :key="time_index">
                     &nbsp;
                 </div>
@@ -215,7 +214,6 @@
     .timeWrap{
         padding-top: 40px;
         padding-right: 10px;
-        margin-left: 150px;
         display: inline-block;
         float: left;
         text-align: center;
@@ -238,7 +236,7 @@
     #TimeTableWrap{
         height: auto;
         display: inline-block;
-        margin-left: 170px;
+        margin-left: 300px;
         margin-top: 100px;
         float: left;
     }
@@ -255,7 +253,6 @@
         height: 18px;
         display: block;
         background-color: white;
-        cursor: pointer;
     }
     .column:first-child{
         border-top: solid 2px rgb(226, 226, 226);
