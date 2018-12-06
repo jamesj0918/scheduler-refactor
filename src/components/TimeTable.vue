@@ -39,7 +39,7 @@
 
     export default {
         name: "TimeTable",
-        props: ['bus'],
+        props: ['bus', "timetable"],
         data(){
             return{
                 timetable_data: [],
@@ -187,10 +187,15 @@
                 if (timetable_index === -1) alert('옳바르지 않은 접근입니다.');
                 else this.timetable_data.splice(timetable_index, 1);
                 this.remove_lecture_from_timetable(lecture);
-                console.log(this.timetable_data);
             }
         },
         mounted() {
+            if (this.timetable) {
+                for (let i=0; i<this.timetable.length; i++){
+                    this.add_lecture_to_timetable(this.timetable[i]);
+                }
+            }
+
             this.$refs["1_1"][0].style.borderRadius = "10px 0 0 0";
             this.$refs["5_1"][0].style.borderRadius = "0 10px 0 0";
             this.$refs["5_24"][0].style.borderRadius = "0 0 10px 0";
