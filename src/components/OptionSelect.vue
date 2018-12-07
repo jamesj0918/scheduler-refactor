@@ -14,21 +14,29 @@
             남은 학점 : {{points}}
         </div>
         <br>
+        <div style = "font-size: 14px; font-weight: bold; color: rgb(85, 85, 85);">
+            공강 선택
+            <i  @click="add_breaktime()" class="fas fa-plus-circle"></i>
+        </div>
         <div class="BreaktimeList">
             <div v-for="(breaktime, index) in breaktime_data" class="BreakTimeSelect">
-                <select v-model="day" class="DaySelect">
-                    <option v-for="day in breaktime">{{day}}</option>
+                <select v-model = "breaktime.day" class="DaySelect">
+                    <option value="mon">월</option>
+                    <option value="tue">화</option>
+                    <option value="wen">수</option>
+                    <option value="thu">목</option>
+                    <option value="fri">금</option>
                 </select>
-                <select v-model="start_time" class="StartTimeSelect">
-                    <option v-for="start_time in breaktime">{{start_time}}</option>
+                <select v-model="breaktime.start_time" class="StartTimeSelect">
+                    <option v-for="start in time_list" :value="sub_colon(start)">{{start}}</option>
                 </select>
                 ~
-                <select v-model="end_time" class="EndTimeSelect">
-                    <option v-for="end_time in breaktime">{{end_time}}</option>
+                <select v-model="breaktime.end_time" class="EndTimeSelect">
+                    <option v-for="end in time_list" :value = "sub_colon(end)">{{end}}</option>
                 </select>
                 <div class="PlusIcon">
-                    <i v-if="day === ''" @click="add_breaktime({day, start_time, end_time}, index)" class="fas fa-plus-circle"></i>
-                    <i v-else @click="add_breaktime({day, start_time, end_time}, index)" class="fas fa-minus-circle"></i>
+
+                    <i @click="sub_choice(index)" class="fas fa-minus-circle"></i>
                 </div>
             </div>
         </div>
@@ -61,7 +69,9 @@
                 pin_lectures: true,
                 select_lectures: false,
                 points: 0.0,
+                extra_code: 0,0,
                 day_list: ["월","화","수","목","금"],
+                option_day_value: ["mon","tue","wen", "thu", "fri","sat","sun"],
                 time_list:[
                     "09:00",
                     "09:30",
@@ -90,9 +100,10 @@
                     "21:00",
                 ],
                 breaktime_data: [{day: "", start_time : "", end_time: ""}],
+                breaktime_count: 1,
                 day: "",
                 start_time: "",
-                end_time: ""
+                end_time: "",
             }
         },
         mounted(){
@@ -117,11 +128,19 @@
             add_lecture_points(lecture){
                 this.points -= lecture.point;
             },
-            add_breaktime(breaktime, index){
-                this.breaktime_data[index] = breaktime;
+            add_breaktime(){
+                this.breaktime_count++;
                 this.breaktime_data.push({day: "", start_time : "", end_time: ""});
-            }
-        }
+            },
+            sub_colon(time){
+                return time[0]+time[1]+time[3]+time[4];
+            },
+            sub_choice(index){
+                this.breaktime_count--;
+                this.breaktime_data.splice(index,1)
+            },
+
+        },
     }
 </script>
 
@@ -129,7 +148,7 @@
     #OptionSelectWrap{
         display: inline-block;
         margin-left: 30px;
-        margin-top: 80px;
+        margin-top: 30px;
     }
     select{
         color: rgb(120, 120, 120);
@@ -166,6 +185,14 @@
     }
     .BreaktimeList{
         display: inline-block;
+        width: 100%;
+        padding-right: 20px;
+        padding-top:5px;
+        height: 100px;
+        overflow-y: scroll;
+        color: rgb(85, 85, 85);
+        font-size: 14px;
+        font-Weight: bolder;
     }
     .EndTimeSelect{
         margin-right: 80px;
