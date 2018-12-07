@@ -69,7 +69,7 @@
                 pin_lectures: true,
                 select_lectures: false,
                 points: 0.0,
-                extra_code: 0,0,
+                extra_code: 0.0,
                 day_list: ["월","화","수","목","금"],
                 option_day_value: ["mon","tue","wen", "thu", "fri","sat","sun"],
                 time_list:[
