@@ -15,7 +15,7 @@
             남은 학점 : {{extra_points}}
         </div>
         <br>
-        <div style = "font-size: 14px; font-weight: bold; color: rgb(85, 85, 85);">
+        <div style = "cursor: pointer;font-size: 14px; font-weight: bold; color: rgb(85, 85, 85);">
             공강 선택
             <i @click="add_breaktime()" class="fas fa-plus-circle"></i>
         </div>
@@ -42,8 +42,8 @@
         </div>
         <br>
         <div class="ToggleSearch">
-            <button :disabled="pin_lectures" @click="toggle">고정 강의</button>
-            <button :disabled="select_lectures" @click="toggle">선택 강의</button>
+            <button style="cursor: pointer;" :disabled="pin_lectures" @click="toggle">고정 강의</button>
+            <button style="cursor: pointer" :disabled="select_lectures" @click="toggle">선택 강의</button>
         </div>
         <br>
         <PinSearchForm v-show="pin_lectures"></PinSearchForm>
