@@ -9,28 +9,36 @@
                 {{category}} / {{subcategory}}
             </div>
             <div class="SubCategoryCount">
-                {{count}}개의 강의
+                {{count}}개의 강의1
             </div>
         </div>
-        <div class="LectureContent">
-            <div class="LectureData" @click="add_lecture(lecture)" v-for="lecture in lecture_data">
-                <div class="LectureTitle">{{lecture.title}}</div>
-                <div class="LectureInfo">
-                    {{lecture.professor}}, {{lecture.classroom}}, {{lecture.point}}학점
-                </div>
-                <div class="LectureTimeWrap" >
-                    <div v-if="lecture.timetable" >
-                        <div class="LectureTime" v-for="time in lecture.timetable.slice().reverse()">
-                            {{time.day}} {{time.start.split(":")[0]+":"+time.start.split(":")[1]}}~{{time.end.split(":")[0]+":"+time.end.split(":")[1]}}
-                        </div>
-                    </div>
-                    <div v-else>
-                        <div class="LectureTime">
-                            온라인
-                        </div>
-                    </div>
-                </div>
+        <transition name="fade" id="fade">
+            <div class="loading" v-show="loading">
+                <span class="fa fa-spinner fa-spin"></span> Loading
             </div>
+        </transition>
+        <div class="LectureContent" id="pin-lecture-list">
+            <ul class="listGroup"  v-on:scroll="get_data">
+                <li class="LectureData" @click="add_lecture(lecture)" v-for="lecture in lecture_data">
+                    <div class="LectureTitle">{{lecture.title}}</div>
+                    <div class="LectureInfo">
+                        {{lecture.professor}}, {{lecture.classroom}}, {{lecture.point}}학점
+                    </div>
+                    <div class="LectureTimeWrap" >
+                        <div v-if="lecture.timetable" >
+                            <div class="LectureTime" v-for="time in lecture.timetable.slice().reverse()">
+                                {{time.day}} {{time.start.split(":")[0]+":"+time.start.split(":")[1]}}~{{time.end.split(":")[0]+":"+time.end.split(":")[1]}}
+                            </div>
+                        </div>
+                        <div v-else>
+                            <div class="LectureTime">
+                                온라인
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+
         </div>
     </div>
 </template>
@@ -50,9 +58,21 @@
                 count: 0,
                 bottom: 0,
                 page: 1,
+                loading: false,
             }
         },
+        mounted(){
+            const listElm1 = document.querySelector('#pin-lecture-list');
+            listElm1.addEventListener( 'scroll',e =>{
+                if(listElm1.scrollTop + listElm1.clientHeight >= listElm1.scrollHeight) {
+                    this.get_data();
+                }
+            });
+            // Initially load some items.
+            this.get_data();
+        },//mounted
         methods:{
+
             add_lecture(lecture){
                 this.$bus.$emit('add_lecture_from_category', lecture);
                 this.$bus.$emit('add_lecture', lecture);
@@ -61,46 +81,31 @@
                 this.$bus.$emit('list_to_subcategory');
             },
             get_data(){
-                axios.get('lectures/search/?category='+this.category+'&subcategory='+this.subcategory+'&page='+this.page)
-                    .then((response)=>{
-                        console.log(response);
-                        this.count = response.data.count;
-                        for(let i = 0; i<response.data.results.length;i++){
-                            this.lecture_data.push(response.data.results[i]);
-                        }
-                        if(this.bottomVisible()) {
-                            this.page++;
-                            this.getData(this.page);
-                        }
-                    })
-            },
-            bottomVisible() {
-                var scrollY = window.pageYOffset;
-                var visible = document.documentElement.clientHeight;
-                var pageHeight = document.documentElement.scrollHeight;
-                var bottomOfPage = visible + scrollY >= pageHeight;
-                return bottomOfPage || pageHeight < visible;
+                this.loading = true;
+                setTimeout(e => {
+                    axios.get('lectures/search/?category=' + this.category + '&subcategory=' + this.subcategory + '&page=' + this.page)
+                        .then((response) => {
+                            console.log(response);
+                            this.count = response.data.count;
+                            for (let i = 0; i < response.data.results.length; i++) {
+                                this.lecture_data.push(response.data.results[i]);
+                            }
+                        });
+                    this.page++;
+                    this.loading = false;
+                }, 500);
             },
         },
-        mounted(){
-            window.addEventListener('scroll', () => {
-                this.bottom = this.bottomVisible();
-            });
-            this.get_data();
-        },//mounted
-        watch: {
-            bottom: function(bottom) {
-                if(bottom) {
-                    this.page++;
-                    this.get_data(this.page);
-                }
-            }
-        },//watch
+
     }
 </script>
 
 <style scoped>
+    *{
+        padding: 0;
+    }
     #LectureListWrap{
+        position: relative;
         display: inline-block;
         height: 100%;
         width: 100%;
@@ -154,6 +159,7 @@
         border-top: solid 1px rgb(221, 221, 221);
         border-radius: 10px 10px 10px 10px;
         margin-top: 10px;
+        list-style: none;
         cursor: pointer;
     }
     .LectureData:hover{
@@ -182,5 +188,23 @@
         font-size: 12px;
         color: rgb(128, 128, 128);
         margin-right: 3px;
+    }
+    .loading {
+        text-align: center;
+        position: absolute;
+        color: #fff;
+        z-index: 9;
+        background: rgb(200, 200 ,200);
+        padding: 8px 18px;
+        border-radius: 5px;
+        left: calc(50% - 50px);
+        top: 40%;
+    }
+
+    .fade-enter-active, .fade-leave-active {
+        transition: opacity .5s
+    }
+    .fade-enter, .fade-leave-to {
+        opacity: 0
     }
 </style>

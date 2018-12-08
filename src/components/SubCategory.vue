@@ -13,7 +13,12 @@
             </div>
         </div>
         <div class="SubCategoryList">
-            <div @click="subcategory_to_list(data.subcategory)" class="SubCategoryWrap" v-for="data in subcategory_count">
+            <transition  name="fade" id="fade">
+                <div class="loading" v-show="loading">
+                    <span class="fa fa-spinner fa-spin"></span> Loading
+                </div>
+            </transition>
+            <div @click="subcategory_to_list(data.subcategory)" class="SubCategoryWrap" v-for="data in subcategory_count" v-show="!loading">
                 <div class="SubCategoryName">{{data.subcategory}}</div>
                 <div class="NextIcon"><i class="fas fa-chevron-right"></i></div>
                 <div class="SubCategoryCount">{{data.count}}개의 강의</div>
@@ -41,7 +46,8 @@
                     취미_생활: ['리빙', '레저/스포츠', '여성/패션']
                 },
                 category_count: 0,
-                subcategory_count: []
+                subcategory_count: [],
+                loading: false,
             }
         },
         methods:{
@@ -60,6 +66,8 @@
             else{
                 search_url = 'search';
             }
+            this.loading = true;
+            console.log("hi");
 
             const category_modified = this.category.replace("/","_").replace("/","_");
             for(let i=0; i<this.subcategories[category_modified].length; i++){
@@ -72,8 +80,11 @@
             }
             axios.get('lectures/'+search_url+'/?category='+this.category)
                 .then((response)=>{
+
                     this.category_count = response.data.count;
+                    this.loading = false;
                 })
+
         }
     }
 </script>
@@ -117,6 +128,7 @@
         font-weight: bolder;
     }
     .SubCategoryList{
+        position: relative;
         display: inline-block;
         height: 200px;
         width: 100%;
@@ -158,5 +170,24 @@
         font-weight: bolder;
         color: rgb(128, 128, 128);
         margin-top: 15px;
+    }
+
+    .loading {
+        text-align: center;
+        position: absolute;
+        color: #fff;
+        z-index: 9;
+        background: rgb(200, 200 ,200);
+        padding: 8px 18px;
+        border-radius: 5px;
+        left: calc(50% - 50px);
+        top: 40%;
+    }
+
+    .fade-enter-active, .fade-leave-active {
+        transition: opacity .5s
+    }
+    .fade-enter, .fade-leave-to {
+        opacity: 0
     }
 </style>

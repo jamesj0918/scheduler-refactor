@@ -1,10 +1,20 @@
 <template>
     <div id="SelectSearchTabWrap">
-        <div class="CategoryWrap" @click="push_layer(data.category)" v-for="(data, index) in lecture_count" :key="index">
-            <div class="CategoryName">{{data.category}}</div>
-            <div class="NextIcon"><i class="fas fa-chevron-right"></i></div>
-            <div class="CategoryCount">{{data.count}}개의 강의</div>
+
+        <transition  name="fade" id="fade">
+            <div class="loading" v-show="loading">
+                <span class="fa fa-spinner fa-spin"></span> Loading
+            </div>
+        </transition>
+
+        <div>
+            <div class="CategoryWrap" @click="push_layer(data.category)" v-for="(data, index) in lecture_count" :key="index">
+                <div class="CategoryName">{{data.category}}</div>
+                <div class="NextIcon"><i class="fas fa-chevron-right"></i></div>
+                <div class="CategoryCount">{{data.count}}개의 강의</div>
+            </div>
         </div>
+
     </div>
 </template>
 
@@ -26,11 +36,14 @@
                     '취미/생활',
                     '국방/군사/경찰',
                 ],
-                lecture_count:[]
+                lecture_count:[],
+                loading: false,
             }
         },
         mounted() {
             let search_url;
+            this.loading = true;
+
             if (this.select_option === 'select'){
                 search_url = 'unique';
             }
@@ -41,8 +54,12 @@
                 axios.get('lectures/'+search_url+'/?category='+this.categories[i])
                     .then((response)=>{
                         this.lecture_count.push({category: this.categories[i], count: response.data.count});
-                    })
+                    });
+                if(i===this.categories.length - 1){
+                    this.loading = false;
+                }
             }
+
         },
         methods:{
             push_layer(category){
@@ -53,7 +70,12 @@
 </script>
 
 <style scoped>
+    *{
+        margin: 0 ;
+        padding: 0;
+    }
     #SelectSearchTabWrap{
+        position: relative;
         margin: 0 auto;
         height: 100%;
         width: 100%;
@@ -94,5 +116,24 @@
         font-weight: bolder;
         color: rgb(128, 128, 128);
         margin-top: 15px;
+    }
+
+    .loading {
+        text-align: center;
+        position: absolute;
+        color: #fff;
+        z-index: 9;
+        background: rgb(200, 200 ,200);
+        padding: 8px 18px;
+        border-radius: 5px;
+        left: calc(50% - 50px);
+        top: 40%;
+    }
+
+    .fade-enter-active, .fade-leave-active {
+        transition: opacity .5s
+    }
+    .fade-enter, .fade-leave-to {
+        opacity: 0
     }
 </style>

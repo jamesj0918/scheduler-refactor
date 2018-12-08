@@ -9,7 +9,13 @@
                                 <input placeholder="과목명/학수번호/교수님성함" type="text" v-model="query" class="SearchInput">
                                 <i style="margin-top: 6px; cursor: pointer" @click="search" class="fas fa-search"></i>
                             </div>
-                            <div class="LectureContent">
+                            <div class="LectureContent" id="pin-search-list">
+                                <transition  name="fade" id="fade">
+                                    <div class="loading" v-show="loading">
+                                        <span class="fa fa-spinner fa-spin"></span> Loading
+                                    </div>
+                                </transition>
+
                                 <div class="LectureData" @click="add_lecture(lecture)" v-for="lecture in search_data">
                                     <div class="LectureTitle">{{lecture.title}}</div>
                                     <div class="LectureInfo">
@@ -67,7 +73,6 @@
     import axios from 'axios';
     import Category from './Category';
     import SubCategory from "./SubCategory";
-    import PinSearchResult from "./PinSearchResult";
     import PinLectureList from "./PinLectureList";
     export default {
         name: "PinSearchForm",
@@ -75,7 +80,6 @@
             PinLectureList,
             SubCategory,
             Category,
-            PinSearchResult,
         },
         data(){
             return{
@@ -87,6 +91,7 @@
                 push_subcategory: '',
                 page: 0,
                 bottom: 0,
+                loading: false,
             }
         },//data
         methods:{
@@ -94,19 +99,24 @@
                 this.search_data=[];
                 this.page=1;
                 this.get_data(this.page);
-                console.log("serach");
             },
-            get_data(page){
-                axios.get('lectures/search/?search='+this.query+'&page='+page)
-                    .then((response)=>{
-                        for(let i = 0; i<response.data.results.length;i++){
-                            this.search_data.push(response.data.results[i]);
-                        }
-                        if(this.bottomVisible()) {
+            get_data(){
+                this.loading = true;
+
+                console.log(this.loading);
+                setTimeout(e => {
+                    axios.get('lectures/search/?search='+this.query+'&page='+this.page)
+                        .then((response)=> {
+
+                                for (let i = 0; i < response.data.results.length; i++) {
+                                    this.search_data.push(response.data.results[i]);
+                                }
+                            });
                             this.page++;
-                            this.getData(this.page);
-                        }
-                    })
+                            this.loading = false;
+                    },500);
+
+
             },
             add_lecture(lecture){
                 this.$bus.$emit('add_lecture', lecture);
@@ -148,9 +158,13 @@
             },
         },//methods
         mounted() {
-            window.addEventListener('scroll', () => {
-                this.bottom = this.bottomVisible();
+            const listElm = document.querySelector('#pin-search-list');
+            listElm.addEventListener( 'scroll',e =>{
+                if(listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight) {
+                    this.get_data();
+                }
             });
+
             this.$bus.$on('category_to_subcategory', this.category_to_subcategory);
             this.$bus.$on('subcategory_to_category', this.subcategory_to_category);
             this.$bus.$on('subcategory_to_list', this.subcategory_to_list);
@@ -158,19 +172,15 @@
             this.$bus.$on('timetable_not_collided', this.add_lecture_to_list);
             this.$bus.$on('get_result',this.get_fix_lecture);
         },//mounted
-        watch: {
-            bottom: function(bottom) {
-                if(bottom) {
-                    this.page++;
-                    this.get_data(this.page);
-                }
-            }
-        },//watch
     }
 </script>
 
 
 <style scoped>
+    *{
+        margin: 0;
+        padding: 0;
+    }
     .TabContent{
         background-color: white;
         width: 330px;
@@ -208,6 +218,7 @@
     }
     .LectureContent{
         display: inline-block;
+        position: relative;
         height: 205px;
         width: 100%;
         overflow-y: scroll;
@@ -265,5 +276,24 @@
         height: 170px;
         width: 100%;
         overflow-y: scroll;
+    }
+
+    .loading {
+        text-align: center;
+        position: absolute;
+        color: #fff;
+        z-index: 9;
+        background: rgb(200, 200 ,200);
+        padding: 8px 18px;
+        border-radius: 5px;
+        left: calc(50% - 50px);
+        top: 40%;
+    }
+
+    .fade-enter-active, .fade-leave-active {
+        transition: opacity .5s
+    }
+    .fade-enter, .fade-leave-to {
+        opacity: 0
     }
 </style>

@@ -12,7 +12,12 @@
                 {{count}}개의 강의
             </div>
         </div>
-        <div class="LectureContent">
+        <transition name="fade" id="fade">
+            <div class="loading" v-show="loading">
+                <span class="fa fa-spinner fa-spin"></span> Loading
+            </div>
+        </transition>
+        <div class="LectureContent" id="select-lecture-list">
             <div @click="add_lecture(lecture)" class="LectureData" v-for="lecture in lecture_data">
                 <div class="LectureTitle">{{lecture.title}}</div>
                 <div class="LectureInfo">
@@ -36,6 +41,8 @@
             return{
                 lecture_data: [],
                 count: 0,
+                loading: false,
+                page: 1,
             }
         },
         methods:{
@@ -45,20 +52,39 @@
             add_lecture(lecture){
                 this.$bus.$emit('add_lecture_to_list', lecture);
             },
+            get_data(){
+                this.loading = true;
+                setTimeout(e => {
+                    axios.get('lectures/unique/?category=' + this.category + '&subcategory=' + this.subcategory+'&page='+this.page)
+                        .then((response) => {
+                            this.count = response.data.count;
+                            for(let i=0; i<response.data.results.length;i++){
+                                this.lecture_data.push(response.data.results[i]);
+                            }
+                            this.loading = false;
+                        });
+                    this.page++;
+                    this.loading = false;
+                }, 500)
+            }
 
         },
         mounted(){
-            axios.get('lectures/unique/?category='+this.category+'&subcategory='+this.subcategory)
-                .then((response)=>{
-                    this.count = response.data.count;
-                    this.lecture_data = response.data.results;
-                })
+            const listElm1 = document.querySelector('#select-lecture-list');
+            listElm1.addEventListener( 'scroll',e =>{
+                if(listElm1.scrollTop + listElm1.clientHeight >= listElm1.scrollHeight) {
+                    this.get_data();
+                }
+            });
+            // Initially load some items.
+            this.get_data();
         }
     }
 </script>
 
 <style scoped>
     #LectureListWrap{
+        position: relative;
         display: inline-block;
         height: 100%;
         width: 100%;
@@ -121,7 +147,7 @@
         margin-top: 9px;
         margin-left: 15px;
         font-weight: bolder;
-        font-size: 16px;
+        font-size: 14px;
         color: rgb(85, 85, 85);
     }
     .LectureInfo{
@@ -129,5 +155,24 @@
         font-weight: bolder;
         font-size: 12px;
         color: rgb(128, 128, 128);
+    }
+
+    .loading {
+        text-align: center;
+        position: absolute;
+        color: #fff;
+        z-index: 9;
+        background: rgb(200, 200 ,200);
+        padding: 8px 18px;
+        border-radius: 5px;
+        left: calc(50% - 50px);
+        top: 40%;
+    }
+
+    .fade-enter-active, .fade-leave-active {
+        transition: opacity .5s
+    }
+    .fade-enter, .fade-leave-to {
+        opacity: 0
     }
 </style>
