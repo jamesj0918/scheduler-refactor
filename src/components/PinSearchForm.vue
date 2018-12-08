@@ -13,7 +13,7 @@
                                 <div class="LectureData" @click="add_lecture(lecture)" v-for="lecture in search_data">
                                     <div class="LectureTitle">{{lecture.title}}</div>
                                     <div class="LectureInfo">
-                                        {{lecture.professor}}, {{lecture.classroom}}
+                                        {{lecture.professor}}, {{lecture.classroom}}, {{lecture.point}}
                                     </div>
                                     <div class="LectureTimeWrap" >
                                         <div class="LectureTime" v-for="time in lecture.timetable.slice().reverse()">
@@ -27,17 +27,16 @@
                 </v-tab>
                 <v-tab icon="fas fa-tags" title="">
                     <div class="TabContent">
-                        <Category v-if="layer === 0" :select_option="'pin'" :bus="bus"></Category>
+                        <Category v-if="layer === 0" :select_option="'pin'"></Category>
                         <SubCategory
                             v-if="layer === 1"
                             :select_option="'pin'"
-                            :bus="bus"
                             :category="this.push_category">
 
                         </SubCategory>
                         <PinLectureList
                             v-if="layer === 2"
-                            :bus="bus"
+
                             :category="this.push_category"
                             :subcategory="this.push_subcategory">
                         </PinLectureList>
@@ -51,7 +50,7 @@
                     </div>
                     <div class="LectureTitle">{{lecture.title}}</div>
                     <div class="LectureInfo">
-                        {{lecture.professor}}, {{lecture.classroom}}
+                        {{lecture.professor}}, {{lecture.classroom}}, {{lecture.point}}학점
                     </div>
                     <div class="LectureTimeWrap" >
                         <div class="LectureTime" v-for="time in lecture.timetable.slice().reverse()">
@@ -76,7 +75,6 @@
             SubCategory,
             Category
         },
-        props: ['bus'],
         data(){
             return{
                 query: '',
@@ -95,7 +93,7 @@
                     })
             },
             add_lecture(lecture){
-                this.bus.$emit('add_lecture', lecture);
+                this.$bus.$emit('add_lecture', lecture);
             },
             add_lecture_to_list(lecture){
                 if (this.lecture_data.indexOf(lecture) === -1) this.lecture_data.push(lecture);
@@ -104,7 +102,7 @@
             remove_lecture(lecture){
                 const index = this.lecture_data.indexOf(lecture);
                 this.lecture_data.splice(index, 1);
-                this.bus.$emit('remove_lecture', lecture);
+                this.$bus.$emit('remove_lecture', lecture);
             },
             category_to_subcategory(category) {
                 this.push_category = category;
@@ -121,14 +119,19 @@
             list_to_subcategory(){
                 this.push_subcategory = "";
                 this.layer--;
+            },
+            get_fix_lecture(){
+                this.$bus.$emit('get_fix_list',this.lecture_data);
+
             }
         },
         mounted() {
-            this.bus.$on('category_to_subcategory', this.category_to_subcategory);
-            this.bus.$on('subcategory_to_category', this.subcategory_to_category);
-            this.bus.$on('subcategory_to_list', this.subcategory_to_list);
-            this.bus.$on('list_to_subcategory', this.list_to_subcategory);
-            this.bus.$on('timetable_not_collided', this.add_lecture_to_list);
+            this.$bus.$on('category_to_subcategory', this.category_to_subcategory);
+            this.$bus.$on('subcategory_to_category', this.subcategory_to_category);
+            this.$bus.$on('subcategory_to_list', this.subcategory_to_list);
+            this.$bus.$on('list_to_subcategory', this.list_to_subcategory);
+            this.$bus.$on('timetable_not_collided', this.add_lecture_to_list);
+            this.$bus.$on('get_result',this.get_fix_lecture);
         }
     }
 </script>

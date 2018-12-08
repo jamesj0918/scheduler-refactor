@@ -46,10 +46,10 @@
         },
         methods:{
             subcategory_to_category(){
-                this.bus.$emit('subcategory_to_category');
+                this.$bus.$emit('subcategory_to_category');
             },
             subcategory_to_list(subcategory){
-                this.bus.$emit('subcategory_to_list', subcategory);
+                this.$bus.$emit('subcategory_to_list', subcategory);
             }
         },
         mounted(){

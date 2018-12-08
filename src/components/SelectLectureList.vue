@@ -40,11 +40,12 @@
         },
         methods:{
             list_to_subcategory(){
-                this.bus.$emit('list_to_subcategory');
+                this.$bus.$emit('list_to_subcategory');
             },
             add_lecture(lecture){
-                this.bus.$emit('add_lecture_to_list', lecture);
-            }
+                this.$bus.$emit('add_lecture_to_list', lecture);
+            },
+
         },
         mounted(){
             axios.get('lectures/unique/?category='+this.category+'&subcategory='+this.subcategory)

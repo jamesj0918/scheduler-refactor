@@ -46,7 +46,7 @@
         },
         methods:{
             push_layer(category){
-                this.bus.$emit('category_to_subcategory', category);
+                this.$bus.$emit('category_to_subcategory', category);
             }
         }
     }

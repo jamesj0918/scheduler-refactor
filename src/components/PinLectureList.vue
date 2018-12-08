@@ -16,7 +16,7 @@
             <div class="LectureData" @click="add_lecture(lecture)" v-for="lecture in lecture_data">
                 <div class="LectureTitle">{{lecture.title}}</div>
                 <div class="LectureInfo">
-                    {{lecture.professor}}, {{lecture.classroom}}
+                    {{lecture.professor}}, {{lecture.classroom}}, {{lecture.point}}학점
                 </div>
                 <div class="LectureTimeWrap" >
                     <div v-if="lecture.timetable" >
@@ -52,12 +52,13 @@
         },
         methods:{
             add_lecture(lecture){
-                this.bus.$emit('add_lecture_from_category', lecture);
-                this.bus.$emit('add_lecture', lecture);
+                this.$bus.$emit('add_lecture_from_category', lecture);
+                this.$bus.$emit('add_lecture', lecture);
             },
             list_to_subcategory(){
-                this.bus.$emit('list_to_subcategory');
-            }
+                this.$bus.$emit('list_to_subcategory');
+            },
+
         },
         mounted(){
             axios.get('lectures/search/?category='+this.category+'&subcategory='+this.subcategory)

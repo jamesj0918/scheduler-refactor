@@ -39,7 +39,7 @@
 
     export default {
         name: "TimeTable",
-        props: ['bus', "timetable"],
+        props: [ "timetable"],
         data(){
             return{
                 timetable_data: [],
@@ -178,7 +178,7 @@
                         }
                     }
                 }
-                this.bus.$emit('timetable_not_collided', lecture);
+                this.$bus.$emit('timetable_not_collided', lecture);
                 this.timetable_data.push(lecture);
                 this.add_lecture_to_timetable(lecture);
             },
@@ -209,8 +209,8 @@
                 let tmp = 5+"_"+j;
                 this.$refs[tmp][0].style.borderRight = "solid 2px rgb(226, 226, 226)";
             }
-            this.bus.$on('add_lecture', this.add_lecture);
-            this.bus.$on('remove_lecture', this.remove_lecture);
+            this.$bus.$on('add_lecture', this.add_lecture);
+            this.$bus.$on('remove_lecture', this.remove_lecture);
         }
     }
 </script>

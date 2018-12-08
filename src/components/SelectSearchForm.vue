@@ -23,12 +23,11 @@
                 </v-tab>
                 <v-tab icon="fas fa-tags" title="">
                     <div class="TabContent">
-                        <Category v-if="layer === 0" :select_option="'select'" :bus="bus"></Category>
-                        <SubCategory v-if="layer === 1" :select_option="'select'" :bus="bus" :category="this.push_category"></SubCategory>
+                        <Category v-if="layer === 0" :select_option="'select'" ></Category>
+                        <SubCategory v-if="layer === 1" :select_option="'select'" :category="this.push_category"></SubCategory>
 
                         <SelectLectureList
                                 v-if="layer === 2"
-                                :bus="bus"
                                 :category="this.push_category"
                                 :subcategory="this.push_subcategory">
                         </SelectLectureList>
@@ -63,7 +62,6 @@
             Category,
             SubCategory
         },
-        props: ["bus"],
         data(){
             return{
                 query: '',
@@ -98,9 +96,12 @@
                 this.layer--;
             },
             add_lecture_to_list(lecture){
-                if (this.lecture_data.indexOf(lecture) === -1) this.lecture_data.push(lecture);
+                if (this.lecture_data.indexOf(lecture) === -1) {
+                    this.lecture_data.push(lecture);
+                    this.$bus.$emit('add_selected_lecture_points', lecture);
+                }
                 else alert('이미 추가된 강의입니다!');
-                this.bus.$emit('add_selected_lecture_points', lecture);
+
             },
             remove_lecture_from_list(lecture){
                 const lecture_index = this.lecture_data.indexOf(lecture);
@@ -109,14 +110,18 @@
                     return;
                 }
                 this.lecture_data.splice(lecture_index, 1);
+            },
+            get_select_list(){
+                this.$bus.$emit('get_select_list',this.lecture_data);
             }
         },
         mounted() {
-            this.bus.$on('category_to_subcategory', this.category_to_subcategory);
-            this.bus.$on('subcategory_to_category', this.subcategory_to_category);
-            this.bus.$on('subcategory_to_list', this.subcategory_to_list);
-            this.bus.$on('list_to_subcategory', this.list_to_subcategory);
-            this.bus.$on('add_lecture_to_list', this.add_lecture_to_list);
+            this.$bus.$on('category_to_subcategory', this.category_to_subcategory);
+            this.$bus.$on('subcategory_to_category', this.subcategory_to_category);
+            this.$bus.$on('subcategory_to_list', this.subcategory_to_list);
+            this.$bus.$on('list_to_subcategory', this.list_to_subcategory);
+            this.$bus.$on('add_lecture_to_list', this.add_lecture_to_list);
+            this.$bus.$on('get_result', this.get_select_list);
         }
     }
 </script>

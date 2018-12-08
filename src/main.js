@@ -11,6 +11,8 @@ Vue.use(VueAxios, axios);
 Vue.use(VueTabs);
 
 axios.defaults.baseURL = "https://scheduler-rest.herokuapp.com/api/";
+Vue.prototype.$bus = new Vue();
+
 
 new Vue({
     router,

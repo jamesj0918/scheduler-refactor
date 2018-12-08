@@ -11,7 +11,8 @@
         <br>
         <div class="PointSelect">
             학점 선택 <input @change="validate_points()" v-model="points" style="width: 30px" type="text">
-            남은 학점 : {{points}}
+            <i style="margin-left: 5px;" class="fas fa-check-circle" @click="set_points"></i>
+            남은 학점 : {{extra_points}}
         </div>
         <br>
         <div style = "font-size: 14px; font-weight: bold; color: rgb(85, 85, 85);">
@@ -23,7 +24,7 @@
                 <select v-model = "breaktime.day" class="DaySelect">
                     <option value="mon">월</option>
                     <option value="tue">화</option>
-                    <option value="wen">수</option>
+                    <option value="wed">수</option>
                     <option value="thu">목</option>
                     <option value="fri">금</option>
                 </select>
@@ -35,7 +36,6 @@
                     <option v-for="end in time_list" :value = "sub_colon(end)">{{end}}</option>
                 </select>
                 <div class="PlusIcon">
-
                     <i @click="sub_choice(index)" class="fas fa-minus-circle"></i>
                 </div>
             </div>
@@ -46,8 +46,8 @@
             <button :disabled="select_lectures" @click="toggle">선택 강의</button>
         </div>
         <br>
-        <PinSearchForm v-show="pin_lectures" :bus="bus"></PinSearchForm>
-        <SelectSearchForm v-show="select_lectures" :bus="bus"></SelectSearchForm>
+        <PinSearchForm v-show="pin_lectures"></PinSearchForm>
+        <SelectSearchForm v-show="select_lectures" ></SelectSearchForm>
     </div>
 </template>
 
@@ -58,7 +58,6 @@
 
     export default {
         name: "OptionSelect",
-        props: ['bus'],
         components:{
             PinSearchForm,
             SelectSearchForm
@@ -69,9 +68,10 @@
                 pin_lectures: true,
                 select_lectures: false,
                 points: 0.0,
-                extra_code: 0.0,
+                extra_points: 0.0,
+                subject_point: 0.0,
                 day_list: ["월","화","수","목","금"],
-                option_day_value: ["mon","tue","wen", "thu", "fri","sat","sun"],
+                option_day_value: ["mon","tue","wed", "thr", "fri","sat","sun"],
                 time_list:[
                     "09:00",
                     "09:30",
@@ -111,8 +111,10 @@
                 .then((response)=>{
                     this.departments = response.data;
                 });
-            this.bus.$on('timetable_not_collided', this.add_lecture_points);
-            this.bus.$on('add_selected_lecture_points', this.add_lecture_points);
+            this.$bus.$on('timetable_not_collided', this.add_lecture_points);
+            this.$bus.$on('add_selected_lecture_points', this.add_lecture_points);
+            this.$bus.$on('remove_lecture', this.sub_lecture_points);
+            this.$bus.$on('get_result',this.get_break_time);
         },
         methods:{
             toggle(){
@@ -126,7 +128,8 @@
                 }
             },
             add_lecture_points(lecture){
-                this.points -= lecture.point;
+                this.subject_point += lecture.point;
+                this.extra_points -= lecture.point;
             },
             add_breaktime(){
                 this.breaktime_count++;
@@ -139,8 +142,18 @@
                 this.breaktime_count--;
                 this.breaktime_data.splice(index,1)
             },
+            set_points(){
+                this.extra_points = this.points - this.subject_point;
+            },
+            sub_lecture_points(lecture){
+                this.subject_point -= lecture.point;
+                this.extra_points+=lecture.point;
+            },
+            get_break_time(){
+                this.$bus.$emit('get_break_time',this.breaktime_data);
+            }
+        },//methods
 
-        },
     }
 </script>
 
@@ -188,7 +201,7 @@
         width: 100%;
         padding-right: 20px;
         padding-top:5px;
-        height: 100px;
+        height: 50px;
         overflow-y: scroll;
         color: rgb(85, 85, 85);
         font-size: 14px;
