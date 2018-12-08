@@ -64,16 +64,18 @@
 </template>
 
 <script>
-    import axios from 'axios'
-    import Category from './Category'
+    import axios from 'axios';
+    import Category from './Category';
     import SubCategory from "./SubCategory";
+    import PinSearchResult from "./PinSearchResult";
     import PinLectureList from "./PinLectureList";
     export default {
         name: "PinSearchForm",
         components:{
             PinLectureList,
             SubCategory,
-            Category
+            Category,
+            PinSearchResult,
         },
         data(){
             return{
@@ -83,13 +85,27 @@
                 layer: 0,
                 push_category: '',
                 push_subcategory: '',
+                page: 0,
+                bottom: 0,
             }
-        },
+        },//data
         methods:{
             search(){
-                axios.get('lectures/search/?search='+this.query)
+                this.search_data=[];
+                this.page=1;
+                this.get_data(this.page);
+                console.log("serach");
+            },
+            get_data(page){
+                axios.get('lectures/search/?search='+this.query+'&page='+page)
                     .then((response)=>{
-                        this.search_data = response.data.results;
+                        for(let i = 0; i<response.data.results.length;i++){
+                            this.search_data.push(response.data.results[i]);
+                        }
+                        if(this.bottomVisible()) {
+                            this.page++;
+                            this.getData(this.page);
+                        }
                     })
             },
             add_lecture(lecture){
@@ -122,17 +138,34 @@
             },
             get_fix_lecture(){
                 this.$bus.$emit('get_fix_list',this.lecture_data);
-
-            }
-        },
+            },
+            bottomVisible() {
+                var scrollY = window.pageYOffset;
+                var visible = document.documentElement.clientHeight;
+                var pageHeight = document.documentElement.scrollHeight;
+                var bottomOfPage = visible + scrollY >= pageHeight;
+                return bottomOfPage || pageHeight < visible;
+            },
+        },//methods
         mounted() {
+            window.addEventListener('scroll', () => {
+                this.bottom = this.bottomVisible();
+            });
             this.$bus.$on('category_to_subcategory', this.category_to_subcategory);
             this.$bus.$on('subcategory_to_category', this.subcategory_to_category);
             this.$bus.$on('subcategory_to_list', this.subcategory_to_list);
             this.$bus.$on('list_to_subcategory', this.list_to_subcategory);
             this.$bus.$on('timetable_not_collided', this.add_lecture_to_list);
             this.$bus.$on('get_result',this.get_fix_lecture);
-        }
+        },//mounted
+        watch: {
+            bottom: function(bottom) {
+                if(bottom) {
+                    this.page++;
+                    this.get_data(this.page);
+                }
+            }
+        },//watch
     }
 </script>
 

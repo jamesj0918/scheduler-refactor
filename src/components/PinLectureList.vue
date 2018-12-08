@@ -48,6 +48,8 @@
             return{
                 lecture_data: [],
                 count: 0,
+                bottom: 0,
+                page: 1,
             }
         },
         methods:{
@@ -58,15 +60,42 @@
             list_to_subcategory(){
                 this.$bus.$emit('list_to_subcategory');
             },
-
+            get_data(){
+                axios.get('lectures/search/?category='+this.category+'&subcategory='+this.subcategory+'&page='+this.page)
+                    .then((response)=>{
+                        console.log(response);
+                        this.count = response.data.count;
+                        for(let i = 0; i<response.data.results.length;i++){
+                            this.lecture_data.push(response.data.results[i]);
+                        }
+                        if(this.bottomVisible()) {
+                            this.page++;
+                            this.getData(this.page);
+                        }
+                    })
+            },
+            bottomVisible() {
+                var scrollY = window.pageYOffset;
+                var visible = document.documentElement.clientHeight;
+                var pageHeight = document.documentElement.scrollHeight;
+                var bottomOfPage = visible + scrollY >= pageHeight;
+                return bottomOfPage || pageHeight < visible;
+            },
         },
         mounted(){
-            axios.get('lectures/search/?category='+this.category+'&subcategory='+this.subcategory)
-                .then((response)=>{
-                    this.count = response.data.count;
-                    this.lecture_data = response.data.results;
-                })
-        }
+            window.addEventListener('scroll', () => {
+                this.bottom = this.bottomVisible();
+            });
+            this.get_data();
+        },//mounted
+        watch: {
+            bottom: function(bottom) {
+                if(bottom) {
+                    this.page++;
+                    this.get_data(this.page);
+                }
+            }
+        },//watch
     }
 </script>
 
