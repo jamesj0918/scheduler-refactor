@@ -1,21 +1,18 @@
 <template>
     <div id="OptionSelectLayoutWrap">
-        <div style="display: inline-block; width: 734px;">
-            <TimeTable style="display: inline-block; width: 434px; height: auto; float: left; "></TimeTable>
-            <div style="display: flex; height: 10vh; float: right; width: 434px; ">
-                <button @click="submit" >submit</button>
+        <div style="display: inline-block; float: left;">
+            <TimeTable></TimeTable>
+            <div style="display: block; margin-left: 480px">
+                <button @click="submit" >확인</button>
             </div>
         </div>
-        <div style="display: inline-block; width: 362px; margin-left: 5%;">
+        <div style="display:inline-block;">
             <OptionSelect ></OptionSelect>
         </div>
-
-
     </div>
 </template>
 
 <script>
-    import Vue from 'vue'
     import TimeTable from './TimeTable'
     import OptionSelect from "./OptionSelect";
     export default {
@@ -24,14 +21,8 @@
             TimeTable,
             OptionSelect
         },
-        data(){
-            return{
-                bus: new Vue()
-            }
-        },
         methods:{
             submit(){
-
                 this.$router.push('/result');
             }
         }
@@ -47,12 +38,17 @@
         margin: 0 auto;
     }
     button{
-        width: 100px;
-        height: 50px;
+        cursor: pointer;
+        width: 80px;
+        height: 30px;
         margin: auto;
         background-color: rgb(266, 266, 266);
-        border-radius: 10px;
+        border: 2px solid rgb(221, 221, 221);
+        border-radius: 5px;
         outline: none;
+        font-weight: bold;
+        font-size: 16px;
+        color: rgb(120, 120, 120);
     }
     button:hover{
         background-color: rgb(230, 230, 230);

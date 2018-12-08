@@ -11,13 +11,13 @@
         <br>
         <div class="PointSelect">
             학점 선택 <input @change="validate_points()" v-model="points" style="width: 30px" type="text">
-            <i style="margin-left: 5px;" class="fas fa-check-circle" @click="set_points"></i>
+            <i style="margin-left:10px; margin-right:135px; cursor:pointer" class="fas fa-check-circle" @click="set_points"></i>
             남은 학점 : {{extra_points}}
         </div>
         <br>
         <div style = "font-size: 14px; font-weight: bold; color: rgb(85, 85, 85);">
             공강 선택
-            <i  @click="add_breaktime()" class="fas fa-plus-circle"></i>
+            <i @click="add_breaktime()" class="fas fa-plus-circle"></i>
         </div>
         <div class="BreaktimeList">
             <div v-for="(breaktime, index) in breaktime_data" class="BreakTimeSelect">
@@ -70,8 +70,8 @@
                 points: 0.0,
                 extra_points: 0.0,
                 subject_point: 0.0,
-                day_list: ["월","화","수","목","금"],
-                option_day_value: ["mon","tue","wed", "thr", "fri","sat","sun"],
+                day_list: ["월", "화", "수", "목", "금"],
+                option_day_value: ["mon", "tue", "wed", "thr", "fri"],
                 time_list:[
                     "09:00",
                     "09:30",

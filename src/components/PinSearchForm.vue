@@ -13,7 +13,7 @@
                                 <div class="LectureData" @click="add_lecture(lecture)" v-for="lecture in search_data">
                                     <div class="LectureTitle">{{lecture.title}}</div>
                                     <div class="LectureInfo">
-                                        {{lecture.professor}}, {{lecture.classroom}}, {{lecture.point}}
+                                        {{lecture.professor}}, {{lecture.classroom}}, {{lecture.point}}학점
                                     </div>
                                     <div class="LectureTimeWrap" >
                                         <div class="LectureTime" v-for="time in lecture.timetable.slice().reverse()">
@@ -94,7 +94,6 @@
                 this.search_data=[];
                 this.page=1;
                 this.get_data(this.page);
-                console.log("serach");
             },
             get_data(page){
                 axios.get('lectures/search/?search='+this.query+'&page='+page)
