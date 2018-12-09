@@ -1,0 +1,310 @@
+<template>
+    <div>
+        <div class="SearchForm">
+            <vue-tabs>
+                <v-tab icon="fas fa-search" title="">
+                    <div class="TabContent">
+                        <div class="SearchFormContent">
+                            <div class="Search">
+                                <input placeholder="과목명/학수번호/교수님성함" type="text" v-model="query" class="SearchInput">
+                                <i style="margin-top: 6px; cursor: pointer" @click="search" class="fas fa-search"></i>
+                            </div>
+                            <div class="LectureContent" id="result-search-list">
+                                <transition  name="fade" id="fade">
+                                    <div class="loading" v-show="loading">
+                                        <span class="fa fa-spinner fa-spin"></span> Loading
+                                    </div>
+                                </transition>
+
+                                <div class="LectureData" @click="add_lecture(lecture)" v-for="lecture in search_data">
+                                    <div class="LectureTitle">{{lecture.title}}</div>
+                                    <div class="LectureInfo">
+                                        {{lecture.professor}}, {{lecture.classroom}}, {{lecture.point}}
+                                    </div>
+                                    <div class="LectureTimeWrap" >
+                                        <div class="LectureTime" v-for="time in lecture.timetable.slice().reverse()">
+                                            {{time.day}} {{time.start.split(":")[0]+":"+time.start.split(":")[1]}}~{{time.end.split(":")[0]+":"+time.end.split(":")[1]}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </v-tab>
+                <v-tab icon="fas fa-tags" title="">
+                    <div class="TabContent">
+                        <Category v-if="layer === 0" :select_option="'pin'"></Category>
+                        <SubCategory
+                            v-if="layer === 1"
+                            :select_option="'pin'"
+                            :category="this.push_category">
+                        </SubCategory>
+                        <ResultLectureList
+                            v-if="layer === 2"
+                            :category="this.push_category"
+                            :subcategory="this.push_subcategory">
+                        </ResultLectureList>
+                    </div>
+                </v-tab>
+            </vue-tabs>
+            <div class="ListContent">
+                <div class="LectureData" @click="remove_lecture(lecture,index)" v-for="(lecture,index) in lecture_data">
+                    <div class="MinusButton" v-show="index>=counts">
+                        <i class="fas fa-minus-circle"></i>
+                    </div>
+                    <div class="LectureTitle">{{lecture.title}}</div>
+                    <div class="LectureInfo">
+                        {{lecture.professor}}, {{lecture.classroom}}, {{lecture.point}}학점
+                    </div>
+                    <div class="LectureTimeWrap" >
+                        <div class="LectureTime" v-for="time in lecture.timetable.slice().reverse()">
+                            {{time.day}} {{time.start.split(":")[0]+":"+time.start.split(":")[1]}}~{{time.end.split(":")[0]+":"+time.end.split(":")[1]}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+    </div>
+</template>
+
+<script>
+    import axios from 'axios';
+    import Category from './Category';
+    import SubCategory from "./SubCategory";
+    import ResultLectureList from "./ResultLectureList";
+    export default {
+        name: "SearchForm",
+        components:{
+            ResultLectureList,
+            SubCategory,
+            Category,
+        },
+        data(){
+            return{
+                query: '',
+                search_data: [],
+                lecture_data: [],
+                layer: 0,
+                push_category: '',
+                push_subcategory: '',
+                page: 0,
+                bottom: 0,
+                counts: 0,
+                loading: false,
+                resultIndex: this.$route.params.result_index,
+            }
+        },//data
+        methods:{
+            search(){
+                this.search_data=[];
+                this.page=1;
+                this.get_data(this.page);
+            },
+            get_data(){
+                this.loading = true;
+
+                console.log(this.loading);
+                setTimeout(e => {
+                    axios.get('lectures/search/?search='+this.query+'&page='+this.page)
+                        .then((response)=> {
+
+                                for (let i = 0; i < response.data.results.length; i++) {
+                                    this.search_data.push(response.data.results[i]);
+                                }
+                            });
+                            this.page++;
+                            this.loading = false;
+                    },500);
+            },
+            add_lecture(lecture){
+                this.$store.dispatch("ADD_CLASS",lecture);
+                this.get_time_table();
+                this.$bus.$emit('result_add_lecture', lecture);
+            },
+            add_lecture_to_list(lecture){
+                if (this.lecture_data.indexOf(lecture) === -1) this.lecture_data.push(lecture);
+                else alert('이미 추가된 강의입니다!');
+            },
+            remove_lecture(lecture, index){
+
+                this.$store.dispatch('SUB_CLASS',index);
+                this.get_time_table();
+
+                //const index = this.lecture_data.indexOf(lecture);
+                //this.lecture_data.splice(index, 1);
+                this.$bus.$emit('result_remove_lecture', lecture);
+            },
+            category_to_subcategory(category) {
+                this.push_category = category;
+                this.layer++;
+            },
+            subcategory_to_category(){
+                this.push_category = "";
+                this.layer--;
+            },
+            subcategory_to_list(subcategory){
+                this.push_subcategory = subcategory;
+                this.layer++;
+            },
+            list_to_subcategory(){
+                this.push_subcategory = "";
+                this.layer--;
+            },
+            get_fix_lecture(){
+                this.$bus.$emit('get_fix_list',this.lecture_data);
+            },
+            bottomVisible() {
+                var scrollY = window.pageYOffset;
+                var visible = document.documentElement.clientHeight;
+                var pageHeight = document.documentElement.scrollHeight;
+                var bottomOfPage = visible + scrollY >= pageHeight;
+                return bottomOfPage || pageHeight < visible;
+            },
+            get_time_table(){
+                this.lecture_data = this.$store.getters.GET_TIMETABLE;
+                this.counts = this.lecture_data.length;
+            }
+        },//methods
+        mounted() {
+            const listElm = document.querySelector('#result-search-list');
+            listElm.addEventListener( 'scroll',e =>{
+                if(listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight) {
+                    this.get_data();
+                }
+            });
+
+            this.get_time_table();
+
+            this.$bus.$on('category_to_subcategory', this.category_to_subcategory);
+            this.$bus.$on('subcategory_to_category', this.subcategory_to_category);
+            this.$bus.$on('subcategory_to_list', this.subcategory_to_list);
+            this.$bus.$on('list_to_subcategory', this.list_to_subcategory);
+            this.$bus.$on('timetable_not_collided', this.add_lecture_to_list);
+            this.$bus.$on('get_result',this.get_fix_lecture);
+            this.$bus.$on('upload_class_list',this.get_time_table());
+        },//mounted
+    }
+</script>
+
+
+<style scoped>
+    *{
+        margin: 0;
+        padding: 0;
+    }
+    .TabContent{
+        background-color: white;
+        width: 330px;
+        height: 250px;
+        border-left: solid 1px rgb(221, 221, 221);
+        border-right: solid 1px rgb(221, 221, 221);
+        border-bottom: solid 1px rgb(221, 221, 221);
+    }
+    .SearchFormContent{
+        display: inline-block;
+        width: 310px;
+        height: 250px;
+        margin: 0 auto;
+        padding-top: 10px;
+    }
+    .Search{
+        background-color: rgb(244, 244, 244);
+        height: 30px;
+        border-radius: 10px 10px 10px 10px;
+        color: rgb(85, 85, 85);
+        margin-left: 10px;
+    }
+    .SearchInput{
+        background: none;
+        display: flex;
+        border-style: none;
+        width: 85%;
+        float: left;
+        margin-left: 10px;
+        height: 100%;
+        font-size: 12px;
+        font-weight: bolder;
+        color: rgb(128, 128, 128);
+        outline: none;
+    }
+    .LectureContent{
+        display: inline-block;
+        position: relative;
+        height: 205px;
+        width: 100%;
+        overflow-y: scroll;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    .LectureData{
+        background-color: white;
+        height: 60px;
+        border-left: solid 1px rgb(221, 221, 221);
+        border-right: solid 1px rgb(221, 221, 221);
+        border-bottom: solid 1px rgb(221, 221, 221);
+        border-top: solid 1px rgb(221, 221, 221);
+        border-radius: 10px 10px 10px 10px;
+        margin-top: 10px;
+        cursor: pointer;
+    }
+    .LectureData:hover{
+        background-color: rgb(244, 244, 244);
+    }
+    .LectureTitle{
+        margin-top: 6px;
+        margin-left: 15px;
+        font-weight: bolder;
+        font-size: 14px;
+        color: rgb(85, 85, 85);
+    }
+    .LectureInfo{
+        margin-top: 2px;
+        margin-left: 15px;
+        font-weight: bolder;
+        font-size: 12px;
+        color: rgb(128, 128, 128);
+    }
+    .LectureTimeWrap{
+        margin-left: 15px;
+    }
+    .LectureTime{
+        display: inline-block;
+        font-weight: bolder;
+        font-size: 12px;
+        color: rgb(128, 128, 128);
+        margin-right: 3px;
+    }
+    .MinusButton{
+        display: inline-block;
+        float: right;
+        margin-top: 20px;
+        margin-right: 15px;
+        color: rgb(85, 85, 85);
+    }
+
+    .ListContent{
+        display: inline-block;
+        height: 170px;
+        width: 100%;
+        overflow-y: scroll;
+    }
+
+    .loading {
+        text-align: center;
+        position: absolute;
+        color: #fff;
+        z-index: 9;
+        background: rgb(200, 200 ,200);
+        padding: 8px 18px;
+        border-radius: 5px;
+        left: calc(50% - 50px);
+        top: 40%;
+    }
+
+    .fade-enter-active, .fade-leave-active {
+        transition: opacity .5s
+    }
+    .fade-enter, .fade-leave-to {
+        opacity: 0
+    }
+</style>

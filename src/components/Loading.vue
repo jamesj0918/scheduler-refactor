@@ -1,28 +1,18 @@
 <template>
-    <div id="OptionSelectLayoutWrap">
-        <div style="display: inline-block; width: 734px;">
-            <TimeTable style="display: inline-block; width: 434px; height: auto; float: left; "></TimeTable>
-            <div style="display: flex; height: 10vh; float: right; width: 434px; ">
-                <button @click="submit" >submit</button>
-            </div>
+    <div>
+        <div v-if="loading">
+            loading
         </div>
-        <div style="display: inline-block; width: 362px; margin-left: 5%;">
-            <OptionSelect ></OptionSelect>
+        <div v-else>
+            <button @click = "go_result">결과 확인</button>
         </div>
-
-
     </div>
 </template>
 
 <script>
-    import TimeTable from './TimeTable'
-    import OptionSelect from "./OptionSelect";
+    import axios from 'axios'
     export default {
-        name: "OptionSelectLayout",
-        components:{
-            TimeTable,
-            OptionSelect
-        },
+        name: "Loading",
         data(){
             return{
                 timetables: [],
@@ -33,22 +23,26 @@
             }
         },
         mounted(){
-
-
+            this.$bus.$on('get_fix_list', this.set_fix_list);
+            this.$bus.$on('get_break_time', this.set_break_time_list);
+            this.$bus.$on('get_select_list', this.set_select_list);
+            this.submit();
         },
         methods:{
             submit(){
-                this.$router.push('/loading');
+                this.$bus.$emit('get_result');
+                this.get_result();
             },
-
-            /*set_fix_list(fixList){
+            go_result(){
+              this.$router.push('/result');
+            },
+            set_fix_list(fixList){
                 console.log(fixList);
                 for(let i = 0 ;i<fixList.length;i++){
                     this.fixList+=String(fixList[i].id);
                     this.fixList+=',';
                 }
                 this.fixList = this.fixList.slice(0,this.fixList.length-1);
-
             },
             set_select_list(selectList){
                 for(let i = 0 ;i<selectList.length;i++){
@@ -63,29 +57,13 @@
                     .then((response)=>{
                         this.timetables = response.data;
                         this.loading = false;
-                    })
-            },*/
+                        this.$store.dispatch("SET_RESULT",this.timetables);
+                    });
+            },
         }
     }
 </script>
 
 <style scoped>
-    *{
-        margin: 0;
-        padding: auto;
-    }
-    #OptionSelectLayoutWrap{
-        margin: 0 auto;
-    }
-    button{
-        width: 100px;
-        height: 50px;
-        margin: auto;
-        background-color: rgb(266, 266, 266);
-        border-radius: 10px;
-        outline: none;
-    }
-    button:hover{
-        background-color: rgb(230, 230, 230);
-    }
+
 </style>

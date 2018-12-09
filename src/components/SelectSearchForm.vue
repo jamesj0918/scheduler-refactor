@@ -26,11 +26,11 @@
                         <Category v-if="layer === 0" :select_option="'select'" ></Category>
                         <SubCategory v-if="layer === 1" :select_option="'select'" :category="this.push_category"></SubCategory>
 
-                        <SelectLectureList
+                        <ResultLectureList
                                 v-if="layer === 2"
                                 :category="this.push_category"
                                 :subcategory="this.push_subcategory">
-                        </SelectLectureList>
+                        </ResultLectureList>
                     </div>
                 </v-tab>
             </vue-tabs>
@@ -53,12 +53,12 @@
     import axios from 'axios'
     import Category from './Category'
     import SubCategory from './SubCategory'
-    import SelectLectureList from "./SelectLectureList";
+    import ResultLectureList from "./ResultLectureList";
 
     export default {
-        name: "SelectSearchForm",
+        name: "ResultSearchForm",
         components: {
-            SelectLectureList,
+            ResultLectureList,
             Category,
             SubCategory
         },
