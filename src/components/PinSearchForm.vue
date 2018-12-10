@@ -107,9 +107,8 @@
                 setTimeout(e => {
                     axios.get('lectures/search/?search='+this.query+'&page='+this.page)
                         .then((response)=> {
-
-                                for (let i = 0; i < response.data.results.length; i++) {
-                                    this.search_data.push(response.data.results[i]);
+                                for (let i = 0; i < response.data.length; i++) {
+                                    this.search_data.push(response.data[i]);
                                 }
                             });
                             this.page++;

@@ -151,6 +151,7 @@
             },
             get_break_time(){
                 this.$bus.$emit('get_break_time',this.breaktime_data);
+                this.$store.dispatch('SET_POINTS',this.extra_points);
             }
         },//methods
 

@@ -1,5 +1,8 @@
 <template>
     <div>
+        <div>
+            남은 학점: {{points}}
+        </div>
         <div class="SearchForm">
             <vue-tabs>
                 <v-tab icon="fas fa-search" title="">
@@ -91,6 +94,7 @@
                 bottom: 0,
                 counts: 0,
                 loading: false,
+                points: 0,
                 resultIndex: this.$route.params.result_index,
             }
         },//data
@@ -107,13 +111,16 @@
                 setTimeout(e => {
                     axios.get('lectures/search/?search='+this.query+'&page='+this.page)
                         .then((response)=> {
-
                                 for (let i = 0; i < response.data.results.length; i++) {
-                                    this.search_data.push(response.data.results[i]);
+
+                                    if(response.data.results[i].point <= this.points) {
+                                        this.search_data.push(response.data.results[i]);
+                                    }
                                 }
+                            this.loading = false;
                             });
                             this.page++;
-                            this.loading = false;
+
                     },500);
             },
             add_lecture(lecture){
@@ -122,6 +129,7 @@
                 this.$bus.$emit('result_add_lecture', lecture);
             },
             add_lecture_to_list(lecture){
+                console.log(this.lecture_data.indexOf(lecture));
                 if (this.lecture_data.indexOf(lecture) === -1) this.lecture_data.push(lecture);
                 else alert('이미 추가된 강의입니다!');
             },
@@ -174,7 +182,7 @@
             });
 
             this.get_time_table();
-
+            this.points = this.$store.getters.GET_POINTS;
             this.$bus.$on('category_to_subcategory', this.category_to_subcategory);
             this.$bus.$on('subcategory_to_category', this.subcategory_to_category);
             this.$bus.$on('subcategory_to_list', this.subcategory_to_list);

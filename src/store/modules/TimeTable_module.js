@@ -2,11 +2,13 @@ const SET_RESULT = "SET_RESULT";
 const ADD_CLASS = "ADD_CLASS";
 const SET_INDEX = "SET_INDEX";
 const SUB_CLASS = "SUB_CLASS";
+const SET_POINTS = "SET_POINTS";
 const GET_RESULT= "GET_RESULT";
 const GET_TIMETABLE = "GET_TIMETABLE";
 
 const state = {
     activeTimeTable: 0,
+    extra_points: 0,
     result: [],
     result_extends: [],
 };
@@ -24,6 +26,9 @@ const mutations = {
     },
     SET_INDEX(state, index){
         state.activeTimeTable = index;
+    },
+    SET_POINTS(state, points){
+        state.extra_points = points;
     }
 
 };
@@ -41,6 +46,9 @@ const actions = {
     SET_INDEX({commit},index){
         commit(SET_INDEX, index);
     },
+    SET_POINTS({commit},points){
+        commit(SET_POINTS, points);
+    }
 
 };
 
@@ -50,10 +58,14 @@ const getters = {
     },
     GET_ORIGINAL: state => {
         console.log("get_timeTable");
+        state.result_extends[state.activeTimeTable] = state[state.activeTimeTable];
         return state.result[state.activeTimeTable];
     },
     GET_TIMETABLE: state => {
         return state.result_extends[state.activeTimeTable];
+    },
+    GET_POINTS: state => {
+        return state.extra_points;
     }
 };
 
