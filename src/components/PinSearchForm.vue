@@ -47,7 +47,7 @@
                             :subcategory="this.push_subcategory">
                         </PinLectureList>
                     </div>
-                </v-tab>
+                 </v-tab>
             </vue-tabs>
             <div class="ListContent">
                 <div class="LectureData" @click="remove_lecture(lecture)" v-for="lecture in lecture_data">
@@ -107,14 +107,14 @@
                 setTimeout(e => {
                     axios.get('lectures/search/?search='+this.query+'&page='+this.page)
                         .then((response)=> {
-                                for (let i = 0; i < response.data.length; i++) {
-                                    this.search_data.push(response.data[i]);
+                                for (let i = 0; i < response.data.results.length; i++) {
+                                    this.search_data.push(response.data.results[i]);
                                 }
                             });
                             this.page++;
-                            this.loading = false;
-                    },500);
 
+                    },500);
+                this.loading = false;
 
             },
             add_lecture(lecture){

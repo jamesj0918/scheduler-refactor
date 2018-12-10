@@ -24,7 +24,7 @@
                                     <div class="LectureInfo">
                                         {{lecture.professor}}, {{lecture.classroom}}, {{lecture.point}}
                                     </div>
-                                    <div class="LectureTimeWrap" >
+                                    <div class="LectureTimeWrap">
                                         <div class="LectureTime" v-for="time in lecture.timetable.slice().reverse()">
                                             {{time.day}} {{time.start.split(":")[0]+":"+time.start.split(":")[1]}}~{{time.end.split(":")[0]+":"+time.end.split(":")[1]}}
                                         </div>
@@ -111,36 +111,36 @@
                 setTimeout(e => {
                     axios.get('lectures/search/?search='+this.query+'&page='+this.page)
                         .then((response)=> {
+                                console.log(response);
                                 for (let i = 0; i < response.data.results.length; i++) {
-
-                                    if(response.data.results[i].point <= this.points) {
                                         this.search_data.push(response.data.results[i]);
-                                    }
                                 }
                             this.loading = false;
                             });
                             this.page++;
-
                     },500);
             },
             add_lecture(lecture){
-                this.$store.dispatch("ADD_CLASS",lecture);
-                this.get_time_table();
+
                 this.$bus.$emit('result_add_lecture', lecture);
             },
             add_lecture_to_list(lecture){
-                console.log(this.lecture_data.indexOf(lecture));
-                if (this.lecture_data.indexOf(lecture) === -1) this.lecture_data.push(lecture);
+                console.log("이미"+this.lecture_data.indexOf(lecture),this.lecture_data);
+                if (this.lecture_data.indexOf(lecture) === -1) {
+                    this.$store.dispatch("ADD_CLASS",lecture);
+                    this.get_time_table();
+
+                }
                 else alert('이미 추가된 강의입니다!');
             },
             remove_lecture(lecture, index){
 
-                this.$store.dispatch('SUB_CLASS',index);
-                this.get_time_table();
-
                 //const index = this.lecture_data.indexOf(lecture);
                 //this.lecture_data.splice(index, 1);
                 this.$bus.$emit('result_remove_lecture', lecture);
+                this.$store.dispatch('SUB_CLASS',index);
+                this.get_time_table();
+
             },
             category_to_subcategory(category) {
                 this.push_category = category;
@@ -170,6 +170,9 @@
             },
             get_time_table(){
                 this.lecture_data = this.$store.getters.GET_TIMETABLE;
+                for(let i=0;i<this.lecture_data;i++){
+                    this.points-=this.lecture_data.points;
+                }
                 this.counts = this.lecture_data.length;
             }
         },//methods
@@ -187,7 +190,7 @@
             this.$bus.$on('subcategory_to_category', this.subcategory_to_category);
             this.$bus.$on('subcategory_to_list', this.subcategory_to_list);
             this.$bus.$on('list_to_subcategory', this.list_to_subcategory);
-            this.$bus.$on('timetable_not_collided', this.add_lecture_to_list);
+            this.$bus.$on('result_timetable_not_collided', this.add_lecture_to_list);
             this.$bus.$on('get_result',this.get_fix_lecture);
             this.$bus.$on('upload_class_list',this.get_time_table());
         },//mounted

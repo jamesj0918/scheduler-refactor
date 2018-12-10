@@ -40,31 +40,6 @@
             submit(){
                 this.$router.push('/loading');
             },
-
-            /*set_fix_list(fixList){
-                console.log(fixList);
-                for(let i = 0 ;i<fixList.length;i++){
-                    this.fixList+=String(fixList[i].id);
-                    this.fixList+=',';
-                }
-                this.fixList = this.fixList.slice(0,this.fixList.length-1);
-
-            },
-            set_select_list(selectList){
-                for(let i = 0 ;i<selectList.length;i++){
-                    this.selectList+=String(selectList[i].code);
-                    this.selectList+=',';
-                }
-                this.selectList = this.selectList.slice(0,this.selectList.length-1);
-            },
-            get_result(){
-                this.loading = true;
-                axios.get('lectures/query/?timetable='+this.breakTimeList+'&selected='+this.selectList+'&fixed='+this.fixList)
-                    .then((response)=>{
-                        this.timetables = response.data;
-                        this.loading = false;
-                    })
-            },*/
         }
     }
 </script>

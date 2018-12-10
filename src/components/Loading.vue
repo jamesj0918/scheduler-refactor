@@ -51,6 +51,18 @@
                 }
                 this.selectList = this.selectList.slice(0,this.selectList.length-1);
             },
+            set_break_time_list(breakTimeList){
+                console.log(breakTimeList);
+                for(let i = 0; i<breakTimeList.length; i++){
+                    this.breakTimeList+=String(breakTimeList[i].day);
+                    this.breakTimeList+=':';
+                    this.breakTimeList+=String(breakTimeList[i].start_time);
+                    this.breakTimeList+=':';
+                    this.breakTimeList+=String(breakTimeList[i].end_time);
+                    this.breakTimeList+=',';
+                }
+                this.breakTimeList = this.breakTimeList.slice(0,this.breakTimeList.length-1);
+            },
             get_result(){
                 this.loading = true;
                 axios.get('lectures/query/?timetable='+this.breakTimeList+'&selected='+this.selectList+'&fixed='+this.fixList)

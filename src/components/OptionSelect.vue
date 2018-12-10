@@ -144,6 +144,7 @@
             },
             set_points(){
                 this.extra_points = this.points - this.subject_point;
+                this.$store.dispatch('SET_POINTS',this.points);
             },
             sub_lecture_points(lecture){
                 this.subject_point -= lecture.point;
@@ -151,7 +152,7 @@
             },
             get_break_time(){
                 this.$bus.$emit('get_break_time',this.breaktime_data);
-                this.$store.dispatch('SET_POINTS',this.extra_points);
+
             }
         },//methods
 

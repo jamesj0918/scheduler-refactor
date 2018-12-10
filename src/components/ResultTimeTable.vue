@@ -178,14 +178,16 @@
                         }
                     }
                 }
-                this.$bus.$emit('timetable_not_collided', lecture);
+                this.$bus.$emit('result_timetable_not_collided', lecture);
                 this.timetable_data = this.$store.getters.GET_TIMETABLE;
                 this.add_lecture_to_timetable(lecture);
             },
             remove_lecture(lecture){
                 const timetable_index = this.timetable_data.indexOf(lecture);
                 if (timetable_index === -1) alert('옳바르지 않은 접근입니다.');
-                else this.timetable_data.splice(timetable_index, 1);
+                else {
+                    this.timetable_data.splice(timetable_index, 1);
+                }
                 this.remove_lecture_from_timetable(lecture);
             }
         },

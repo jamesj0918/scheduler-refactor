@@ -8,7 +8,7 @@ const GET_TIMETABLE = "GET_TIMETABLE";
 
 const state = {
     activeTimeTable: 0,
-    extra_points: 0,
+    points: 0,
     result: [],
     result_extends: [],
 };
@@ -28,7 +28,7 @@ const mutations = {
         state.activeTimeTable = index;
     },
     SET_POINTS(state, points){
-        state.extra_points = points;
+        state.points = points;
     }
 
 };
