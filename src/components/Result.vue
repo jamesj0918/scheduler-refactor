@@ -2,30 +2,26 @@
     <div id="ResultWrap">
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
         <div class="TimeTableWrap">
-            <TimeTable  :timetable="timetable">
-
-            </TimeTable>
+            <ResultTimeTable  :timetable="timetable">
+            </ResultTimeTable>
         </div>
         <div class="SearchFormWrap">
-            <PinSearchForm >
-
-            </PinSearchForm>
+            <ResultSearchForm >
+            </ResultSearchForm>
         </div>
     </div>
 </template>
 
 <script>
-    import Vue from 'vue';
-    import TimeTable from "./TimeTable";
-    import PinSearchForm from "./PinSearchForm";
+    import ResultTimeTable from "./ResultTimeTable";
+    import ResultSearchForm from "./ResultSearchForm";
 
     export default {
         name: "Result",
-        components: {PinSearchForm, TimeTable},
+        components: {ResultSearchForm, ResultTimeTable},
         props: ["timetable"],
         data(){
             return{
-                result_bus: new Vue()
             }
         }
     }

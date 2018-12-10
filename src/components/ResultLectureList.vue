@@ -9,7 +9,7 @@
                 {{category}} / {{subcategory}}
             </div>
             <div class="SubCategoryCount">
-                {{count}}개의 강의
+                {{count}}개의 강의1
             </div>
         </div>
         <transition name="fade" id="fade">
@@ -17,13 +17,27 @@
                 <span class="fa fa-spinner fa-spin"></span> Loading
             </div>
         </transition>
-        <div class="LectureContent" id="select-lecture-list">
-            <div @click="add_lecture(lecture)" class="LectureData" v-for="lecture in lecture_data">
-                <div class="LectureTitle">{{lecture.title}}</div>
-                <div class="LectureInfo">
-                    {{lecture.code}}, {{lecture.point}}학점
-                </div>
-            </div>
+        <div class="LectureContent" id="pin-lecture-list">
+            <ul class="listGroup"  v-on:scroll="get_data">
+                <li class="LectureData" @click="add_lecture(lecture)" v-for="lecture in lecture_data">
+                    <div class="LectureTitle">{{lecture.title}}</div>
+                    <div class="LectureInfo">
+                        {{lecture.professor}}, {{lecture.classroom}}, {{lecture.point}}학점
+                    </div>
+                    <div class="LectureTimeWrap" >
+                        <div v-if="lecture.timetable" >
+                            <div class="LectureTime" v-for="time in lecture.timetable.slice().reverse()">
+                                {{time.day}} {{time.start.split(":")[0]+":"+time.start.split(":")[1]}}~{{time.end.split(":")[0]+":"+time.end.split(":")[1]}}
+                            </div>
+                        </div>
+                        <div v-else>
+                            <div class="LectureTime">
+                                온라인
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
         </div>
     </div>
 </template>
@@ -31,7 +45,7 @@
 <script>
     import axios from 'axios'
     export default {
-        name: "SelectLectureList",
+        name: "ResultLectureList",
         props:[
             "bus",
             "category",
@@ -41,36 +55,13 @@
             return{
                 lecture_data: [],
                 count: 0,
-                loading: false,
+                bottom: 0,
                 page: 1,
+                loading: false,
             }
-        },
-        methods:{
-            list_to_subcategory(){
-                this.$bus.$emit('list_to_subcategory');
-            },
-            add_lecture(lecture){
-                this.$bus.$emit('add_lecture_to_list', lecture);
-            },
-            get_data(){
-                this.loading = true;
-                setTimeout(e => {
-                    axios.get('lectures/unique/?category=' + this.category + '&subcategory=' + this.subcategory+'&page='+this.page)
-                        .then((response) => {
-                            this.count = response.data.count;
-                            for(let i=0; i<response.data.results.length;i++){
-                                this.lecture_data.push(response.data.results[i]);
-                            }
-                            this.loading = false;
-                        });
-                    this.page++;
-                    this.loading = false;
-                }, 500)
-            }
-
         },
         mounted(){
-            const listElm1 = document.querySelector('#select-lecture-list');
+            const listElm1 = document.querySelector('#pin-lecture-list');
             listElm1.addEventListener( 'scroll',e =>{
                 if(listElm1.scrollTop + listElm1.clientHeight >= listElm1.scrollHeight) {
                     this.get_data();
@@ -78,11 +69,42 @@
             });
             // Initially load some items.
             this.get_data();
-        }
+        },//mounted
+        methods:{
+            add_lecture(lecture){
+                this.$store.dispatch("ADD_CLASS",lecture);
+                this.$bus.$emit('upload_class_list');
+
+                /*
+                this.$bus.$emit('add_lecture_from_category', lecture);
+                this.$bus.$emit('add_lecture', lecture);*/
+            },
+            list_to_subcategory(){
+                this.$bus.$emit('list_to_subcategory');
+            },
+            get_data(){
+                this.loading = true;
+                setTimeout(e => {
+                    axios.get('lectures/search/?category=' + this.category + '&subcategory=' + this.subcategory + '&page=' + this.page)
+                        .then((response) => {
+                            this.count = response.data.count;
+                            for (let i = 0; i < response.data.results.length; i++) {
+                                this.lecture_data.push(response.data.results[i]);
+                            }
+                        });
+                    this.page++;
+                    this.loading = false;
+                }, 500);
+            },
+        },
+
     }
 </script>
 
 <style scoped>
+    *{
+        padding: 0;
+    }
     #LectureListWrap{
         position: relative;
         display: inline-block;
@@ -123,7 +145,7 @@
     }
     .LectureContent{
         display: inline-block;
-        height: 195px;
+        height: 205px;
         width: 310px;
         overflow-y: scroll;
         padding-left: 10px;
@@ -131,32 +153,43 @@
     }
     .LectureData{
         background-color: white;
-        height: 50px;
+        height: 60px;
         border-left: solid 1px rgb(221, 221, 221);
         border-right: solid 1px rgb(221, 221, 221);
         border-bottom: solid 1px rgb(221, 221, 221);
         border-top: solid 1px rgb(221, 221, 221);
         border-radius: 10px 10px 10px 10px;
         margin-top: 10px;
+        list-style: none;
         cursor: pointer;
     }
     .LectureData:hover{
         background-color: rgb(244, 244, 244);
     }
     .LectureTitle{
-        margin-top: 9px;
+        margin-top: 6px;
         margin-left: 15px;
         font-weight: bolder;
         font-size: 14px;
         color: rgb(85, 85, 85);
     }
     .LectureInfo{
+        margin-top: 2px;
         margin-left: 15px;
         font-weight: bolder;
         font-size: 12px;
         color: rgb(128, 128, 128);
     }
-
+    .LectureTimeWrap{
+        margin-left: 15px;
+    }
+    .LectureTime{
+        display: inline-block;
+        font-weight: bolder;
+        font-size: 12px;
+        color: rgb(128, 128, 128);
+        margin-right: 3px;
+    }
     .loading {
         text-align: center;
         position: absolute;

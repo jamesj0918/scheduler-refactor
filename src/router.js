@@ -6,6 +6,7 @@ import OptionSelectLayout from './components/OptionSelectLayout'
 import ResultList from "./components/ResultList";
 import Result from "./components/Result"
 import ResultLayout from "./components/ResultLayout"
+import Loading from './components/Loading'
 
 Vue.use(Router);
 
@@ -35,6 +36,11 @@ export default new Router({
                     component: Result,
                 }
             ]
+        },
+        {
+            path: '/loading',
+            name: 'Loading',
+            component: Loading,
         }
     ]
 })

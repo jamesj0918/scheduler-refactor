@@ -21,10 +21,23 @@
             TimeTable,
             OptionSelect
         },
+        data(){
+            return{
+                timetables: [],
+                breakTimeList: "",
+                fixList:"",
+                selectList:"",
+                loading: false,
+            }
+        },
+        mounted(){
+
+
+        },
         methods:{
             submit(){
-                this.$router.push('/result');
-            }
+                this.$router.push('/loading');
+            },
         }
     }
 </script>
