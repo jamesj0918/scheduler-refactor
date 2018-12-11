@@ -195,7 +195,7 @@
                     }
                 }
                 this.breakTimeList = this.breakTimeList.slice(0, this.breakTimeList.length - 1);
-                this.counts = this.lecture_data.length;
+
             }
         },//methods
         mounted() {
@@ -207,6 +207,7 @@
             });
             this.get_time_table();
             this.points = this.$store.getters.GET_POINTS;
+            this.counts = this.$store.getters.GET_LENGTH;
             this.$bus.$on('category_to_subcategory', this.category_to_subcategory);
             this.$bus.$on('subcategory_to_category', this.subcategory_to_category);
             this.$bus.$on('subcategory_to_list', this.subcategory_to_list);

@@ -66,6 +66,9 @@ const getters = {
     },
     GET_POINTS: state => {
         return state.points;
+    },
+    GET_LENGTH: state => {
+        return state.result[state.activeTimeTable].length;
     }
 };
 
