@@ -1,13 +1,16 @@
 <template>
     <div>
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
         <div class="SearchForm">
             <vue-tabs>
                 <v-tab icon="fas fa-search" title="">
                     <div class="TabContent">
                         <div class="SearchFormContent">
                             <div class="Search">
-                                <input placeholder="과목명/학수번호/교수님성함" type="text" v-model="query" class="SearchInput">
-                                <i style="margin-top: 6px; cursor: pointer" @click="search" class="fas fa-search"></i>
+                                <form v-on:submit.prevent="search">
+                                    <input placeholder="과목명/학과/교수님성함" type="text" v-model="query" class="SearchInput">
+                                    <i style="margin-top: 6px; cursor: pointer" @click="search" class="fas fa-search"></i>
+                                </form>
                             </div>
                             <div class="LectureContent" id="pin-search-list">
                                 <transition  name="fade" id="fade">
@@ -15,7 +18,6 @@
                                         <span class="fa fa-spinner fa-spin"></span> Loading
                                     </div>
                                 </transition>
-
                                 <div class="LectureData" @click="add_lecture(lecture)" v-for="lecture in search_data">
                                     <div class="LectureTitle">{{lecture.title}}</div>
                                     <div class="LectureInfo">
@@ -218,6 +220,7 @@
         font-weight: bolder;
         color: rgb(128, 128, 128);
         outline: none;
+        margin-top: 1vh;
     }
     .LectureContent{
         display: inline-block;

@@ -7,8 +7,10 @@
                     <div class="TabContent">
                         <div class="SearchFormContent">
                             <div class="Search">
-                                <input placeholder="과목명/학수번호/교수님성함" type="text" v-model="query" class="SearchInput">
-                                <i style="margin-top: 6px; cursor: pointer" @click="search" class="fas fa-search"></i>
+                                <form v-on:submit.prevent="search">
+                                    <input placeholder="과목명/학과/교수님성함" type="text" v-model="query" class="SearchInput">
+                                    <i style="margin-top: 6px; cursor: pointer" @click="search" class="fas fa-search"></i>
+                                </form>
                             </div>
                             <div class="LectureContent">
                                 <div @click="add_lecture_to_list(lecture)" class="LectureData" v-for="lecture in search_data">
@@ -163,6 +165,7 @@
         color: rgb(128, 128, 128);
         outline: none;
         margin-bottom: 10px;
+        margin-top: 1vh;
     }
     .LectureContent{
         display: inline-block;

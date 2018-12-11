@@ -7,7 +7,7 @@
             </div>
         </div>
         <div style="display:inline-block;">
-            <OptionSelect ></OptionSelect>
+            <OptionSelect></OptionSelect>
         </div>
     </div>
 </template>
