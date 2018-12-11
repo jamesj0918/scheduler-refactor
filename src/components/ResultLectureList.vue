@@ -81,7 +81,6 @@
             },
             get_data(){
                 this.loading = true;
-                console.log("수업시간",this.breakTime);
                 setTimeout(e => {
                     axios.get('lectures/search/?category=' + this.category + '&subcategory=' + this.subcategory + '&page=' + this.page +'&timetable='+this.breakTime)
                         .then((response) => {

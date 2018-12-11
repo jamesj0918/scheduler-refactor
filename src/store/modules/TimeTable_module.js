@@ -29,8 +29,11 @@ const mutations = {
     SET_POINTS(state, points){
         state.points = points;
     },
-    REMOVE_TIMETABLE(state,timetable, index){
+    REMOVE_TIMETABLE(state, index){
+        console.log("before",state.result_extends);
         state.result_extends.splice(state.result_extends.map((timetable)=> {return timetable.id}).indexOf(index), 1);
+        console.log("after",state.result_extends);
+
     }
 
 };
@@ -51,18 +54,17 @@ const actions = {
     SET_POINTS({commit},points){
         commit(SET_POINTS, points);
     },
-    REMOVE_TIMETABlE({commit},index){
-        commit(REMOVE_TIMETABLE);
+    REMOVE_TIMETABLE({commit},index){
+        commit(REMOVE_TIMETABLE, index);
     }
 
 };
 
 const getters = {
     GET_RESULT: function(state){
-        return state.result;
+        return state.result_extends;
     },
     GET_ORIGINAL: state => {
-        console.log("get_timeTable");
         state.result_extends[state.activeTimeTable] = state[state.activeTimeTable];
         return state.result[state.activeTimeTable];
     },

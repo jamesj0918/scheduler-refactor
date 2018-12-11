@@ -38,7 +38,6 @@
               this.$router.push('/result');
             },
             set_fix_list(fixList){
-                console.log(fixList);
                 for(let i = 0 ;i<fixList.length;i++){
                     this.fixList+=String(fixList[i].id);
                     this.fixList+=',';
@@ -53,7 +52,6 @@
                 this.selectList = this.selectList.slice(0,this.selectList.length-1);
             },
             set_break_time_list(breakTimeList){
-                console.log(breakTimeList);
                 if(breakTimeList.length==0){
                     this.breakTimeList = '';
                 }

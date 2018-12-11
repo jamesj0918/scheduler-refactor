@@ -85,7 +85,6 @@
                 setTimeout(e => {
                     axios.get('lectures/search/?category=' + this.category + '&subcategory=' + this.subcategory + '&page=' + this.page)
                         .then((response) => {
-                            console.log(response);
                             this.count = response.data.count;
                             for (let i = 0; i < response.data.results.length; i++) {
                                 this.lecture_data.push(response.data.results[i]);

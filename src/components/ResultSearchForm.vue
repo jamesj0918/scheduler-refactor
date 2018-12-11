@@ -109,11 +109,9 @@
             get_data(){
                 this.loading = true;
 
-                console.log(this.breakTimeList);
                 setTimeout(e => {
                     axios.get('lectures/search/?timetable='+this.breakTimeList+'&search='+this.query+'&page='+this.page)
                         .then((response)=>{
-                                console.log(response);
                                 for (let i = 0; i < response.data.results.length; i++) {
                                         this.search_data.push(response.data.results[i]);
                                 }
@@ -129,7 +127,6 @@
                 else alert('이미 추가된 강의입니다!');
             },
             add_lecture_to_list(lecture){
-                console.log("이미"+this.lecture_data.indexOf(lecture),this.lecture_data);
                 this.get_time_table();
 
             },
@@ -189,7 +186,6 @@
                 this.lecture_data = this.$store.getters.GET_TIMETABLE;
                 for (let i = 0; i < this.lecture_data.length; i++) {
                     this.points -= parseFloat(this.lecture_data[i].point);
-                    console.log("결과목록", this.lecture_data[i]);
                     for (let j = 0; j < this.lecture_data[i].timetable.length; j++) {
                         this.add_break_time(this.lecture_data[i].timetable[j]);
                     }
