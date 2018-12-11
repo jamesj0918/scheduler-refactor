@@ -36,14 +36,18 @@
                 this.$router.push({name: 'Result', params: {timetable: timetable, result_index: index}});
             },
             remove_timetable(index){
+                this.$store.dispatch('REMOVE_TIMETABLE',index);
                 this.timetables.splice(this.timetables.map((timetable)=> {return timetable.id}).indexOf(index), 1);
+            }
+            get_result_list(){
+                const timetables = this.$store.getters.GET_RESULT;
+                for(let i=0; i<timetables.length; i++){
+                    this.timetables.push({id : i, timetable: timetables[i]})
+                }
             }
         },
         created(){
-            const timetables = this.$store.getters.GET_RESULT;
-            for(let i=0; i<timetables.length; i++){
-                this.timetables.push({id : i, timetable: timetables[i]})
-            }
+            this.get_result_list();
         },
     }
 </script>
