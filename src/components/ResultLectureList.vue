@@ -73,15 +73,11 @@
         },//mounted
         methods:{
             add_lecture(lecture){
-                this.$store.dispatch("ADD_CLASS",lecture);
-                this.$bus.$emit('upload_class_list');
-
-                /*
-                this.$bus.$emit('add_lecture_from_category', lecture);
-                this.$bus.$emit('add_lecture', lecture);*/
+                this.$bus.$emit('result_upload_class_list');
+                this.$bus.$emit('result_add_lecture', lecture);
             },
             list_to_subcategory(){
-                this.$bus.$emit('list_to_subcategory');
+                this.$bus.$emit('result_list_to_subcategory');
             },
             get_data(){
                 this.loading = true;

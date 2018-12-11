@@ -123,16 +123,15 @@
                     },500);
             },
             add_lecture(lecture){
-
-                this.$bus.$emit('result_add_lecture', lecture);
+                if (this.lecture_data.indexOf(lecture) === -1) {
+                    this.$bus.$emit('result_add_lecture', lecture);
+                }
+                else alert('이미 추가된 강의입니다!');
             },
             add_lecture_to_list(lecture){
                 console.log("이미"+this.lecture_data.indexOf(lecture),this.lecture_data);
-                if (this.lecture_data.indexOf(lecture) === -1) {
-                    this.$store.dispatch("ADD_CLASS",lecture);
-                    this.get_time_table();
-                }
-                else alert('이미 추가된 강의입니다!');
+                this.get_time_table();
+
             },
             remove_lecture(lecture, index){
 
@@ -181,22 +180,21 @@
                 this.breakTimeList += ":" ;
                 this.breakTimeList+=this.sub_colon(timetable.end);
                 this.breakTimeList+=',';
-
             },
             sub_colon(time){
                 return time[0]+time[1]+time[3]+time[4];
             },
-            get_time_table(){
+            get_time_table() {
+                this.points = this.$store.getters.GET_POINTS;
                 this.lecture_data = this.$store.getters.GET_TIMETABLE;
-                for(let i=0;i<this.lecture_data.length;i++){
-                    this.points-= parseFloat(this.lecture_data[i].point);
-                    console.log("결과목록",this.lecture_data[i]);
-                    for(let j=0;j<this.lecture_data[i].timetable.length;j++){
+                for (let i = 0; i < this.lecture_data.length; i++) {
+                    this.points -= parseFloat(this.lecture_data[i].point);
+                    console.log("결과목록", this.lecture_data[i]);
+                    for (let j = 0; j < this.lecture_data[i].timetable.length; j++) {
                         this.add_break_time(this.lecture_data[i].timetable[j]);
                     }
                 }
-                this.breakTimeList = this.breakTimeList.slice(0,this.breakTimeList.length-1);
-
+                this.breakTimeList = this.breakTimeList.slice(0, this.breakTimeList.length - 1);
                 this.counts = this.lecture_data.length;
             }
         },//methods
@@ -212,10 +210,10 @@
             this.$bus.$on('category_to_subcategory', this.category_to_subcategory);
             this.$bus.$on('subcategory_to_category', this.subcategory_to_category);
             this.$bus.$on('subcategory_to_list', this.subcategory_to_list);
-            this.$bus.$on('list_to_subcategory', this.list_to_subcategory);
+            this.$bus.$on('result_list_to_subcategory', this.list_to_subcategory);
             this.$bus.$on('result_timetable_not_collided', this.add_lecture_to_list);
             this.$bus.$on('get_result',this.get_fix_lecture);
-            this.$bus.$on('upload_class_list',this.get_time_table());
+            this.$bus.$on('result_upload_class_list',this.get_time_table());
         },//mounted
     }
 </script>

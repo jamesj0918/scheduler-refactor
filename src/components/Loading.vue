@@ -16,7 +16,7 @@
         data(){
             return{
                 timetables: [],
-                breakTimeList: "",
+                breakTimeList:'',
                 fixList:"",
                 selectList:"",
                 loading: false,
@@ -58,6 +58,7 @@
                     this.breakTimeList = '';
                 }
                 else{
+                    this.breakTimeList+='&timetable=';
                     for(let i = 0; i<breakTimeList.length; i++){
                         this.breakTimeList+=String(breakTimeList[i].day);
                         this.breakTimeList+=':';
@@ -71,7 +72,7 @@
             },
             get_result(){
                 this.loading = true;
-                axios.get('lectures/query/?timetable='+this.breakTimeList+'&selected='+this.selectList+'&fixed='+this.fixList)
+                axios.get('lectures/query/?selected='+this.selectList+'&fixed='+this.fixList +this.breakTimeList)
                     .then((response)=>{
                         console.log("결과전체목록",response);
                         this.timetables = response.data;
