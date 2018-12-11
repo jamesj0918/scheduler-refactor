@@ -71,7 +71,7 @@
                 extra_points: 0.0,
                 subject_point: 0.0,
                 day_list: ["월","화","수","목","금"],
-                option_day_value: ["mon","tue","wed", "thr", "fri","sat","sun"],
+                option_day_value: ["mon","tue","wed", "thu", "fri","sat","sun"],
                 time_list:[
                     "09:00",
                     "09:30",
@@ -99,7 +99,7 @@
                     "20:30",
                     "21:00",
                 ],
-                breaktime_data: [{day: "", start_time : "", end_time: ""}],
+                breaktime_data: [],
                 breaktime_count: 1,
                 day: "",
                 start_time: "",

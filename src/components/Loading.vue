@@ -26,6 +26,7 @@
             this.$bus.$on('get_fix_list', this.set_fix_list);
             this.$bus.$on('get_break_time', this.set_break_time_list);
             this.$bus.$on('get_select_list', this.set_select_list);
+            this.breakTimeList="";
             this.submit();
         },
         methods:{
@@ -53,20 +54,26 @@
             },
             set_break_time_list(breakTimeList){
                 console.log(breakTimeList);
-                for(let i = 0; i<breakTimeList.length; i++){
-                    this.breakTimeList+=String(breakTimeList[i].day);
-                    this.breakTimeList+=':';
-                    this.breakTimeList+=String(breakTimeList[i].start_time);
-                    this.breakTimeList+=':';
-                    this.breakTimeList+=String(breakTimeList[i].end_time);
-                    this.breakTimeList+=',';
+                if(breakTimeList.length==0){
+                    this.breakTimeList = '';
                 }
-                this.breakTimeList = this.breakTimeList.slice(0,this.breakTimeList.length-1);
+                else{
+                    for(let i = 0; i<breakTimeList.length; i++){
+                        this.breakTimeList+=String(breakTimeList[i].day);
+                        this.breakTimeList+=':';
+                        this.breakTimeList+=String(breakTimeList[i].start_time);
+                        this.breakTimeList+=':';
+                        this.breakTimeList+=String(breakTimeList[i].end_time);
+                        this.breakTimeList+=',';
+                    }
+                    this.breakTimeList = this.breakTimeList.slice(0,this.breakTimeList.length-1);
+                }
             },
             get_result(){
                 this.loading = true;
                 axios.get('lectures/query/?timetable='+this.breakTimeList+'&selected='+this.selectList+'&fixed='+this.fixList)
                     .then((response)=>{
+                        console.log("결과전체목록",response);
                         this.timetables = response.data;
                         this.loading = false;
                         this.$store.dispatch("SET_RESULT",this.timetables);

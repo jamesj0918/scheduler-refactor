@@ -47,7 +47,7 @@
     export default {
         name: "ResultLectureList",
         props:[
-            "bus",
+            "breakTime",
             "category",
             "subcategory"
         ],
@@ -58,6 +58,7 @@
                 bottom: 0,
                 page: 1,
                 loading: false,
+                breakTimeList: '',
             }
         },
         mounted(){
@@ -84,8 +85,9 @@
             },
             get_data(){
                 this.loading = true;
+                console.log("수업시간",this.breakTime);
                 setTimeout(e => {
-                    axios.get('lectures/search/?category=' + this.category + '&subcategory=' + this.subcategory + '&page=' + this.page)
+                    axios.get('lectures/search/?category=' + this.category + '&subcategory=' + this.subcategory + '&page=' + this.page +'&timetable='+this.breakTime)
                         .then((response) => {
                             this.count = response.data.count;
                             for (let i = 0; i < response.data.results.length; i++) {

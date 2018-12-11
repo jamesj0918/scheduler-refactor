@@ -65,7 +65,7 @@ const getters = {
         return state.result_extends[state.activeTimeTable];
     },
     GET_POINTS: state => {
-        return state.extra_points;
+        return state.points;
     }
 };
 

@@ -44,6 +44,7 @@
                         </SubCategory>
                         <ResultLectureList
                             v-if="layer === 2"
+                            :breakTime="this.breakTimeList"
                             :category="this.push_category"
                             :subcategory="this.push_subcategory">
                         </ResultLectureList>
@@ -90,6 +91,7 @@
                 layer: 0,
                 push_category: '',
                 push_subcategory: '',
+                breakTimeList: '',
                 page: 0,
                 bottom: 0,
                 counts: 0,
@@ -107,16 +109,16 @@
             get_data(){
                 this.loading = true;
 
-                console.log(this.loading);
+                console.log(this.breakTimeList);
                 setTimeout(e => {
-                    axios.get('lectures/search/?search='+this.query+'&page='+this.page)
-                        .then((response)=> {
+                    axios.get('lectures/search/?timetable='+this.breakTimeList+'&search='+this.query+'&page='+this.page)
+                        .then((response)=>{
                                 console.log(response);
                                 for (let i = 0; i < response.data.results.length; i++) {
                                         this.search_data.push(response.data.results[i]);
                                 }
-                            this.loading = false;
                             });
+                            this.loading = false;
                             this.page++;
                     },500);
             },
@@ -129,7 +131,6 @@
                 if (this.lecture_data.indexOf(lecture) === -1) {
                     this.$store.dispatch("ADD_CLASS",lecture);
                     this.get_time_table();
-
                 }
                 else alert('이미 추가된 강의입니다!');
             },
@@ -140,7 +141,6 @@
                 this.$bus.$emit('result_remove_lecture', lecture);
                 this.$store.dispatch('SUB_CLASS',index);
                 this.get_time_table();
-
             },
             category_to_subcategory(category) {
                 this.push_category = category;
@@ -168,11 +168,35 @@
                 var bottomOfPage = visible + scrollY >= pageHeight;
                 return bottomOfPage || pageHeight < visible;
             },
+            add_break_time(timetable){
+                if(timetable.day == '월') this.breakTimeList+="mon";
+                if(timetable.day == '화') this.breakTimeList+="tue";
+                if(timetable.day == '수') this.breakTimeList+="wed";
+                if(timetable.day == '목') this.breakTimeList+="thu";
+                if(timetable.day == '금') this.breakTimeList+="fri";
+
+                this.breakTimeList += ":" ;
+
+                this.breakTimeList+=this.sub_colon(timetable.start);
+                this.breakTimeList += ":" ;
+                this.breakTimeList+=this.sub_colon(timetable.end);
+                this.breakTimeList+=',';
+
+            },
+            sub_colon(time){
+                return time[0]+time[1]+time[3]+time[4];
+            },
             get_time_table(){
                 this.lecture_data = this.$store.getters.GET_TIMETABLE;
-                for(let i=0;i<this.lecture_data;i++){
-                    this.points-=this.lecture_data.points;
+                for(let i=0;i<this.lecture_data.length;i++){
+                    this.points-= parseFloat(this.lecture_data[i].point);
+                    console.log("결과목록",this.lecture_data[i]);
+                    for(let j=0;j<this.lecture_data[i].timetable.length;j++){
+                        this.add_break_time(this.lecture_data[i].timetable[j]);
+                    }
                 }
+                this.breakTimeList = this.breakTimeList.slice(0,this.breakTimeList.length-1);
+
                 this.counts = this.lecture_data.length;
             }
         },//methods
@@ -183,7 +207,6 @@
                     this.get_data();
                 }
             });
-
             this.get_time_table();
             this.points = this.$store.getters.GET_POINTS;
             this.$bus.$on('category_to_subcategory', this.category_to_subcategory);
