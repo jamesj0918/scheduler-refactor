@@ -134,8 +134,8 @@
 
                 //const index = this.lecture_data.indexOf(lecture);
                 //this.lecture_data.splice(index, 1);
-                this.$bus.$emit('result_remove_lecture', lecture);
-                this.$store.dispatch('SUB_CLASS',index);
+                this.$bus.$emit('result_remove_lecture', lecture, index);
+
                 this.get_time_table();
             },
             category_to_subcategory(category) {
