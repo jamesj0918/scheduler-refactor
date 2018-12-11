@@ -99,9 +99,9 @@
                 if (this.lecture_data.indexOf(lecture) === -1) {
                     this.lecture_data.push(lecture);
                     this.$bus.$emit('add_selected_lecture_points', lecture);
+                    this.$store.state.submit.selected_counts++;
                 }
                 else alert('이미 추가된 강의입니다!');
-
             },
             remove_lecture_from_list(lecture){
                 const lecture_index = this.lecture_data.indexOf(lecture);
@@ -110,6 +110,7 @@
                     return;
                 }
                 this.lecture_data.splice(lecture_index, 1);
+                this.$store.state.submit.selected_counts--;
             },
             get_select_list(){
                 this.$bus.$emit('get_select_list',this.lecture_data);

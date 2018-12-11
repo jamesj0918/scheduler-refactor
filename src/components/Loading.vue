@@ -1,10 +1,10 @@
 <template>
-    <div>
-        <div v-if="loading">
-            loading
+    <div><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+        <div v-if="loading" style="color: rgb(120, 120, 120);">
+            <i style="margin-left: 46%;margin-top: 20%;" class="fas fa-spinner grey fa-4x fa-spin"></i>
         </div>
         <div v-else>
-            <button @click = "go_result">결과 확인</button>
+            <button class="result" @click = "go_result">결과 확인</button>
         </div>
     </div>
 </template>
@@ -16,7 +16,7 @@
         data(){
             return{
                 timetables: [],
-                breakTimeList:'',
+                breakTimeList: "",
                 fixList:"",
                 selectList:"",
                 loading: false,
@@ -60,12 +60,18 @@
                 else{
                     this.breakTimeList+='&timetable=';
                     for(let i = 0; i<breakTimeList.length; i++){
-                        this.breakTimeList+=String(breakTimeList[i].day);
-                        this.breakTimeList+=':';
-                        this.breakTimeList+=String(breakTimeList[i].start_time);
-                        this.breakTimeList+=':';
-                        this.breakTimeList+=String(breakTimeList[i].end_time);
-                        this.breakTimeList+=',';
+                        if (breakTimeList[i].day !== "all"){
+                            this.breakTimeList+=String(breakTimeList[i].day);
+                            this.breakTimeList+=':';
+                        }
+                        if (breakTimeList[i].start_time){
+                            this.breakTimeList+=String(breakTimeList[i].start_time);
+                            this.breakTimeList+=':';
+                        }
+                        if (breakTimeList[i].end_time){
+                            this.breakTimeList+=String(breakTimeList[i].end_time);
+                            this.breakTimeList+=',';
+                        }
                     }
                     this.breakTimeList = this.breakTimeList.slice(0,this.breakTimeList.length-1);
                 }
@@ -74,7 +80,6 @@
                 this.loading = true;
                 axios.get('lectures/query/?selected='+this.selectList+'&fixed='+this.fixList +this.breakTimeList)
                     .then((response)=>{
-                        console.log("결과전체목록",response);
                         this.timetables = response.data;
                         this.loading = false;
                         this.$store.dispatch("SET_RESULT",this.timetables);
@@ -85,5 +90,13 @@
 </script>
 
 <style scoped>
-
+    .result{
+        display: inline-block;
+        color: rgb(85, 85, 85);
+        margin-left: 45%;
+        margin-top: 20%;
+        cursor: pointer;
+        width: 5vw;
+        height: 3vh;
+    }
 </style>

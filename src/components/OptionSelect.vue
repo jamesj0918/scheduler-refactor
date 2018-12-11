@@ -15,18 +15,19 @@
             남은 학점 : {{extra_points}}
         </div>
         <br>
-        <div style = "font-size: 14px; font-weight: bold; color: rgb(85, 85, 85);">
+        <div style = "cursor: pointer;font-size: 14px; font-weight: bold; color: rgb(85, 85, 85);">
             공강 선택
             <i @click="add_breaktime()" class="fas fa-plus-circle"></i>
         </div>
         <div class="BreaktimeList">
             <div v-for="(breaktime, index) in breaktime_data" class="BreakTimeSelect">
-                <select v-model = "breaktime.day" class="DaySelect">
+                <select v-model="breaktime.day" class="DaySelect">
                     <option value="mon">월</option>
                     <option value="tue">화</option>
                     <option value="wed">수</option>
                     <option value="thu">목</option>
                     <option value="fri">금</option>
+                    <option value="all">매일</option>
                 </select>
                 <select v-model="breaktime.start_time" class="StartTimeSelect">
                     <option v-for="start in time_list" :value="sub_colon(start)">{{start}}</option>
@@ -42,8 +43,8 @@
         </div>
         <br>
         <div class="ToggleSearch">
-            <button :disabled="pin_lectures" @click="toggle">고정 강의</button>
-            <button :disabled="select_lectures" @click="toggle">선택 강의</button>
+            <button style="cursor: pointer;" :disabled="pin_lectures" @click="toggle">고정 강의</button>
+            <button style="cursor: pointer" :disabled="select_lectures" @click="toggle">선택 강의</button>
         </div>
         <br>
         <PinSearchForm v-show="pin_lectures"></PinSearchForm>
@@ -134,20 +135,22 @@
             add_breaktime(){
                 this.breaktime_count++;
                 this.breaktime_data.push({day: "", start_time : "", end_time: ""});
+                this.store.state.submit.breaktime_data++;
             },
             sub_colon(time){
                 return time[0]+time[1]+time[3]+time[4];
             },
             sub_choice(index){
                 this.breaktime_count--;
-                this.breaktime_data.splice(index,1)
+                this.breaktime_data.splice(index,1);
+                this.store.state.submit.breaktime_data--;
             },
             set_points(){
                 this.extra_points = this.points - this.subject_point;
                 this.$store.dispatch('SET_POINTS',this.points);
             },
             sub_lecture_points(lecture){
-                this.subject_point -= lecture.point;
+                this.subject_point-=lecture.point;
                 this.extra_points+=lecture.point;
             },
             get_break_time(){

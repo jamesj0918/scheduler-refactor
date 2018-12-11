@@ -121,12 +121,16 @@
                 this.$bus.$emit('add_lecture', lecture);
             },
             add_lecture_to_list(lecture){
-                if (this.lecture_data.indexOf(lecture) === -1) this.lecture_data.push(lecture);
+                if (this.lecture_data.indexOf(lecture) === -1) {
+                    this.lecture_data.push(lecture);
+                    this.$store.state.submit.pinned_counts++;
+                }
                 else alert('이미 추가된 강의입니다!');
             },
             remove_lecture(lecture){
                 const index = this.lecture_data.indexOf(lecture);
                 this.lecture_data.splice(index, 1);
+                this.$store.state.submit.pinned_counts--;
                 this.$bus.$emit('remove_lecture', lecture);
             },
             category_to_subcategory(category) {
