@@ -1,17 +1,18 @@
 <template>
     <div id="ResultLayoutWrap">
-        <transition name="fade" id="fade">
-            <div class="loading" v-show="loading">
-                <span class="fa fa-spinner fa-spin"></span> Loading
-            </div>
-        </transition>
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
         <div class="TimeTableListWrap" :style="{width: ((timetables.length) * 475) + 'px'}">
-            <div class="TimeTableList" v-for="(timetable, index) in timetables">
-                <div class="TimeTable" @click="link_result(timetable, index)">
-                    <TimeTable
-                            :timetable="timetable"
-                            style="margin: 0 auto; float: right; cursor: pointer">
-                    </TimeTable>
+            <div class="TimeTableList" v-for="timetable in timetables" :key="timetable.id">
+                <div class="TimeTable" >
+                    <div class="DeleteIcon" @click="remove_timetable(timetable.id)">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <div @click="link_result(timetable.timetable, timetable.id)">
+                        <TimeTable
+                                :timetable="timetable.timetable"
+                                style="margin: 0 auto; float: right; cursor: pointer">
+                        </TimeTable>
+                    </div>
                 </div>
             </div>
         </div>
@@ -20,8 +21,6 @@
 
 <script>
     import TimeTable from "./TimeTable";
-    import axios from 'axios';
-
     export default {
         name: "ResultLayout",
         components: {TimeTable},
@@ -33,14 +32,19 @@
         },
         methods:{
             link_result(timetable, index){
-                this.$store.dispatch('SET_INDEX',index);
+                this.$store.dispatch('SET_INDEX', index);
                 this.$router.push({name: 'Result', params: {timetable: timetable, result_index: index}});
             },
+            remove_timetable(index){
+                this.timetables.splice(this.timetables.map((timetable)=> {return timetable.id}).indexOf(index), 1);
+            }
         },
         created(){
-            this.timetables = this.$store.getters.GET_RESULT;
+            const timetables = this.$store.getters.GET_RESULT;
+            for(let i=0; i<timetables.length; i++){
+                this.timetables.push({id : i, timetable: timetables[i]})
+            }
         },
-
     }
 </script>
 
@@ -66,23 +70,14 @@
         width: 100vw;
         overflow-x: scroll;
     }
-
-    .loading {
-        text-align: center;
-        position: absolute;
-        color: #fff;
-        z-index: 9;
-        background: rgb(200, 200 ,200);
-        padding: 8px 18px;
-        border-radius: 5px;
-        left: calc(50% - 50px);
-        top: 40%;
+    .DeleteIcon{
+        float : right;
+        margin-right : 1vw;
+        cursor: pointer;
+        color : rgb(120, 120, 120);
+    }
+    .DeleteIcon:hover{
+        color: rgb(85, 85, 85);
     }
 
-    .fade-enter-active, .fade-leave-active {
-        transition: opacity .5s
-    }
-    .fade-enter, .fade-leave-to {
-        opacity: 0
-    }
 </style>

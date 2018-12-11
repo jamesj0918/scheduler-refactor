@@ -3,7 +3,7 @@
         <div style="display: inline-block; float: left;">
             <TimeTable></TimeTable>
             <div style="display: block; margin-left: 480px">
-                <button @click="submit" >확인</button>
+                <button @click="submit">확인</button>
             </div>
         </div>
         <div style="display:inline-block;">
@@ -30,13 +30,17 @@
                 loading: false,
             }
         },
-        mounted(){
-
-
-        },
         methods:{
             submit(){
-                this.$router.push('/loading');
+                let pinned_counts = this.$store.state.submit.pinned_counts;
+                let selected_counts = this.$store.state.submit.selected_counts;
+                let breaktime_counts = this.$store.state.submit.breaktime_counts;
+                if (pinned_counts > 0 && selected_counts > 0 && breaktime_counts >= 0) {
+                    this.$router.push('/loading');
+                }
+                else{
+                    alert('고정강의와 선택강의 모두 최소 1개 이상은 필요합니다!');
+                }
             },
         }
     }
