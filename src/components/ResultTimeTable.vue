@@ -183,10 +183,11 @@
                 this.timetable_data = this.$store.getters.GET_TIMETABLE;
                 this.add_lecture_to_timetable(lecture);
             },
-            remove_lecture(lecture){
+            remove_lecture(lecture, index){
                 const timetable_index = this.timetable_data.indexOf(lecture);
                 if (timetable_index === -1) alert('옳바르지 않은 접근입니다.');
                 else {
+                    this.$store.dispatch('SUB_CLASS',index);
                     this.timetable_data.splice(timetable_index, 1);
                 }
                 this.remove_lecture_from_timetable(lecture);
