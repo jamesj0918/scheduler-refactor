@@ -85,6 +85,10 @@
         },
         methods:{
             search(){
+                this.page = 1;
+                this.get_data();
+            },
+            get_data(){
                 this.loading = true;
                 axios.get('lectures/unique/?search='+this.query+'&page='+this.page)
                     .then((response)=>{
@@ -94,7 +98,6 @@
                         this.page++;
                         this.loading = false;
                     });
-
             },
             category_to_subcategory(category) {
                 this.push_category = category;
@@ -134,11 +137,10 @@
             }
         },
         mounted() {
-
             const listElm = document.querySelector('#select-search-list');
             listElm.addEventListener( 'scroll',e =>{
                 if(listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight) {
-                    this.search();
+                    this.get_data();
                 }
             });
             this.$bus.$on('category_to_subcategory', this.category_to_subcategory);

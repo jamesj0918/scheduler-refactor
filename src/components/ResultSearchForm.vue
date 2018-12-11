@@ -18,7 +18,6 @@
                                         <span class="fa fa-spinner fa-spin"></span> Loading
                                     </div>
                                 </transition>
-
                                 <div class="LectureData" @click="add_lecture(lecture)" v-for="lecture in search_data">
                                     <div class="LectureTitle">{{lecture.title}}</div>
                                     <div class="LectureInfo">
@@ -135,7 +134,9 @@
                     axios.get('lectures/search/?timetable='+this.breakTimeList+'&search='+this.query+'&page='+this.page)
                         .then((response)=>{
                                 for (let i = 0; i < response.data.results.length; i++) {
+                                    if(this.points >= response.data.results[i].point){
                                         this.search_data.push(response.data.results[i]);
+                                    }
                                 }
                             });
                             this.loading = false;
@@ -204,6 +205,8 @@
                 return time[0]+time[1]+time[3]+time[4];
             },
             get_time_table() {
+                this.lecture_data = [];
+                this.breakTimeList = '';
                 this.points = this.$store.getters.GET_POINTS;
                 this.lecture_data = this.$store.getters.GET_TIMETABLE;
                 for (let i = 0; i < this.lecture_data.length; i++) {

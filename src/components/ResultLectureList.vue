@@ -67,6 +67,7 @@
                 page: 1,
                 loading: false,
                 breakTimeList: '',
+                points: 0,
             }
         },
         mounted(){
@@ -77,6 +78,8 @@
                 }
             });
             // Initially load some items.
+            this.points = this.$store.getters.GET_POINTS;
+
             this.get_data();
         },//mounted
         methods:{
@@ -89,17 +92,20 @@
             },
             get_data(){
                 this.loading = true;
-                setTimeout(e => {
                     axios.get('lectures/search/?category=' + this.category + '&subcategory=' + this.subcategory + '&page=' + this.page +'&timetable='+this.breakTime)
                         .then((response) => {
                             this.count = response.data.count;
+                            console.log(this.points);
                             for (let i = 0; i < response.data.results.length; i++) {
-                                this.lecture_data.push(response.data.results[i]);
+                                if(this.points >= response.data.results[i].point){
+                                    this.lecture_data.push(response.data.results[i]);
+                                    console.log("hi");
+                                }
+                                this.page++;
+                                this.loading = false;
                             }
                         });
-                    this.page++;
-                    this.loading = false;
-                }, 500);
+
             },
         },
 
