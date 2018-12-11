@@ -36,17 +36,24 @@
                     </div>
                 </v-tab>
             </vue-tabs>
-            <div class="ListContent">
-                <div @click="remove_lecture_from_list(lecture)" class="LectureData" v-for="lecture in lecture_data">
-                    <div class="MinusButton">
-                        <i class="fas fa-minus-circle"></i>
+                <transition  name="fade" id="fade">
+                    <div class="loading" v-show="loading">
+                        <span class="fa fa-spinner fa-spin"></span> Loading
                     </div>
-                    <div class="LectureTitle">{{lecture.title}}</div>
-                    <div class="LectureInfo">
-                        {{lecture.code}}, {{lecture.point}}학점
+                </transition>
+                <div class="ListContent" id="select-search-list">
+                    <div @click="remove_lecture_from_list(lecture)" class="LectureData" v-for="lecture in lecture_data">
+                        <div class="MinusButton">
+                            <i class="fas fa-minus-circle"></i>
+                        </div>
+                        <div class="LectureTitle">{{lecture.title}}</div>
+                        <div class="LectureInfo">
+                            {{lecture.code}}, {{lecture.point}}학점
+                        </div>
                     </div>
                 </div>
-            </div>
+
+
         </div>
     </div>
 </template>
@@ -71,15 +78,23 @@
                 search_data: [],
                 layer: 0,
                 push_category: '',
-                push_subcategory: ''
+                push_subcategory: '',
+                loading: false,
+                page: 1,
             }
         },
         methods:{
             search(){
-                axios.get('lectures/unique/?search='+this.query)
+                this.loading = true;
+                axios.get('lectures/unique/?search='+this.query+'&page='+this.page)
                     .then((response)=>{
-                        this.search_data = response.data.results;
-                    })
+                        for(let i = 0;i<response.data.results.length; i++){
+                            this.search_data.push(response.data.results[i]);
+                        }
+                        this.page++;
+                        this.loading = false;
+                    });
+
             },
             category_to_subcategory(category) {
                 this.push_category = category;
@@ -119,6 +134,13 @@
             }
         },
         mounted() {
+
+            const listElm = document.querySelector('#select-search-list');
+            listElm.addEventListener( 'scroll',e =>{
+                if(listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight) {
+                    this.search();
+                }
+            });
             this.$bus.$on('category_to_subcategory', this.category_to_subcategory);
             this.$bus.$on('subcategory_to_category', this.subcategory_to_category);
             this.$bus.$on('subcategory_to_list', this.subcategory_to_list);
@@ -214,5 +236,27 @@
         margin-top: 16px;
         margin-right: 15px;
         color: rgb(85, 85, 85);
+    }
+    .SearchForm{
+        position: relative;
+    }
+
+    .loading {
+        text-align: center;
+        position: absolute;
+        color: #fff;
+        z-index: 9;
+        background: rgb(200, 200 ,200);
+        padding: 8px 18px;
+        border-radius: 5px;
+        left: calc(50% - 50px);
+        top: 30%;
+    }
+
+    .fade-enter-active, .fade-leave-active {
+        transition: opacity .5s
+    }
+    .fade-enter, .fade-leave-to {
+        opacity: 0
     }
 </style>

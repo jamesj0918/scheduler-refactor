@@ -17,12 +17,20 @@
                 <span class="fa fa-spinner fa-spin"></span> Loading
             </div>
         </transition>
-        <div class="LectureContent" id="pin-lecture-list">
+        <div class="LectureContent" id="result-lecture-list">
             <ul class="listGroup"  v-on:scroll="get_data">
                 <li class="LectureData" @click="add_lecture(lecture)" v-for="lecture in lecture_data">
                     <div class="LectureTitle">{{lecture.title}}</div>
                     <div class="LectureInfo">
-                        {{lecture.professor}}, {{lecture.classroom}}, {{lecture.point}}학점
+                        <div class="info">
+                            {{lecture.professor}},
+                        </div>
+                        <div v-if="lecture.timetable.length != 0" class="info">
+                            {{lecture.classroom}},
+                        </div>
+                        <div class="info">
+                            {{lecture.point}}학점
+                        </div>
                     </div>
                     <div class="LectureTimeWrap" >
                         <div v-if="lecture.timetable" >
@@ -62,7 +70,7 @@
             }
         },
         mounted(){
-            const listElm1 = document.querySelector('#pin-lecture-list');
+            const listElm1 = document.querySelector('#result-lecture-list');
             listElm1.addEventListener( 'scroll',e =>{
                 if(listElm1.scrollTop + listElm1.clientHeight >= listElm1.scrollHeight) {
                     this.get_data();
@@ -197,6 +205,11 @@
         border-radius: 5px;
         left: calc(50% - 50px);
         top: 40%;
+    }
+
+    .info{
+        display: inline-block;
+        width: auto;
     }
 
     .fade-enter-active, .fade-leave-active {

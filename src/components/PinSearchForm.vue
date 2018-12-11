@@ -12,21 +12,36 @@
                                     <i style="margin-top: 6px; cursor: pointer" @click="search" class="fas fa-search"></i>
                                 </form>
                             </div>
+                            <transition  name="fade" id="fade">
+                                <div class="loading" v-show="loading">
+                                    <span class="fa fa-spinner fa-spin"></span> Loading
+                                </div>
+                            </transition>
                             <div class="LectureContent" id="pin-search-list">
-                                <transition  name="fade" id="fade">
-                                    <div class="loading" v-show="loading">
-                                        <span class="fa fa-spinner fa-spin"></span> Loading
-                                    </div>
-                                </transition>
+
                                 <div class="LectureData" @click="add_lecture(lecture)" v-for="lecture in search_data">
                                     <div class="LectureTitle">{{lecture.title}}</div>
                                     <div class="LectureInfo">
-                                        {{lecture.professor}}, {{lecture.classroom}}, {{lecture.point}}학점
+                                        <div class="info">
+                                            {{lecture.professor}},
+                                        </div>
+                                        <div v-if="lecture.timetable.length != 0" class="info">
+                                            {{lecture.classroom}},
+                                        </div>
+                                        <div class="info">
+                                            {{lecture.point}}학점
+                                        </div>
                                     </div>
                                     <div class="LectureTimeWrap" >
-                                        <div class="LectureTime" v-for="time in lecture.timetable.slice().reverse()">
-                                            {{time.day}} {{time.start.split(":")[0]+":"+time.start.split(":")[1]}}~{{time.end.split(":")[0]+":"+time.end.split(":")[1]}}
+                                        <div v-if="lecture.timetable.length !== 0">
+                                            <div class="LectureTime" v-for="time in lecture.timetable.slice().reverse()">
+                                                {{time.day}} {{time.start.split(":")[0]+":"+time.start.split(":")[1]}}~{{time.end.split(":")[0]+":"+time.end.split(":")[1]}}
+                                            </div>
                                         </div>
+                                        <div v-else class="LectureTime">
+                                            온라인
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -58,12 +73,26 @@
                     </div>
                     <div class="LectureTitle">{{lecture.title}}</div>
                     <div class="LectureInfo">
-                        {{lecture.professor}}, {{lecture.classroom}}, {{lecture.point}}학점
+                        <div class="info">
+                            {{lecture.professor}},
+                        </div>
+                        <div v-if="lecture.timetable.length != 0" class="info">
+                            {{lecture.classroom}},
+                        </div>
+                        <div class="info">
+                            {{lecture.point}}학점
+                        </div>
                     </div>
                     <div class="LectureTimeWrap" >
-                        <div class="LectureTime" v-for="time in lecture.timetable.slice().reverse()">
-                            {{time.day}} {{time.start.split(":")[0]+":"+time.start.split(":")[1]}}~{{time.end.split(":")[0]+":"+time.end.split(":")[1]}}
+                        <div v-if="lecture.timetable.length !== 0">
+                            <div class="LectureTime" v-for="time in lecture.timetable.slice().reverse()">
+                                {{time.day}} {{time.start.split(":")[0]+":"+time.start.split(":")[1]}}~{{time.end.split(":")[0]+":"+time.end.split(":")[1]}}
+                            </div>
                         </div>
+                        <div v-else class="LectureTime">
+                            온라인
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -105,17 +134,17 @@
             get_data(){
                 this.loading = true;
 
-                setTimeout(e => {
-                    axios.get('lectures/search/?search='+this.query+'&page='+this.page)
-                        .then((response)=> {
-                                for (let i = 0; i < response.data.results.length; i++) {
-                                    this.search_data.push(response.data.results[i]);
-                                }
-                            });
-                            this.page++;
 
-                    },500);
-                this.loading = false;
+                    axios.get('lectures/search/?search=' + this.query + '&page=' + this.page)
+                        .then((response) => {
+                            for (let i = 0; i < response.data.results.length; i++) {
+                                this.search_data.push(response.data.results[i]);
+
+                            }
+                            console.log(this.loading);
+                            this.loading = false;
+                            this.page++;
+                        });
 
             },
             add_lecture(lecture){
@@ -165,6 +194,7 @@
             const listElm = document.querySelector('#pin-search-list');
             listElm.addEventListener( 'scroll',e =>{
                 if(listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight) {
+                    this.loading=true;
                     this.get_data();
                 }
             });
@@ -195,6 +225,7 @@
     }
     .SearchFormContent{
         display: inline-block;
+        position: relative;
         width: 310px;
         height: 250px;
         margin: 0 auto;
@@ -223,7 +254,6 @@
     }
     .LectureContent{
         display: inline-block;
-        position: relative;
         height: 205px;
         width: 100%;
         overflow-y: scroll;
@@ -281,6 +311,11 @@
         height: 170px;
         width: 100%;
         overflow-y: scroll;
+    }
+
+    .info{
+        display:inline-block;
+        width: auto;
     }
 
     .loading {

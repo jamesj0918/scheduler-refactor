@@ -54,18 +54,17 @@
             },
             get_data(){
                 this.loading = true;
-                setTimeout(e => {
+                console.log('lectures/unique/?category=' + this.category + '&subcategory=' + this.subcategory+'&page='+this.page);
                     axios.get('lectures/unique/?category=' + this.category + '&subcategory=' + this.subcategory+'&page='+this.page)
                         .then((response) => {
                             this.count = response.data.count;
                             for(let i=0; i<response.data.results.length;i++){
                                 this.lecture_data.push(response.data.results[i]);
                             }
+                            this.page++;
                             this.loading = false;
                         });
-                    this.page++;
-                    this.loading = false;
-                }, 500)
+
             }
 
         },
