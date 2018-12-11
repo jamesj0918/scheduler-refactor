@@ -3,8 +3,7 @@ const ADD_CLASS = "ADD_CLASS";
 const SET_INDEX = "SET_INDEX";
 const SUB_CLASS = "SUB_CLASS";
 const SET_POINTS = "SET_POINTS";
-const GET_RESULT= "GET_RESULT";
-const GET_TIMETABLE = "GET_TIMETABLE";
+const REMOVE_TIMETABLE = "REMOVE_TIMETABLE";
 
 const state = {
     activeTimeTable: 0,
@@ -29,6 +28,9 @@ const mutations = {
     },
     SET_POINTS(state, points){
         state.points = points;
+    },
+    REMOVE_TIMETABLE(state,timetable, index){
+        state.result_extends.splice(state.result_extends.map((timetable)=> {return timetable.id}).indexOf(index), 1);
     }
 
 };
@@ -48,6 +50,9 @@ const actions = {
     },
     SET_POINTS({commit},points){
         commit(SET_POINTS, points);
+    },
+    REMOVE_TIMETABlE({commit},index){
+        commit(REMOVE_TIMETABLE);
     }
 
 };
@@ -65,7 +70,10 @@ const getters = {
         return state.result_extends[state.activeTimeTable];
     },
     GET_POINTS: state => {
-        return state.extra_points;
+        return state.points;
+    },
+    GET_LENGTH: state => {
+        return state.result[state.activeTimeTable].length;
     }
 };
 

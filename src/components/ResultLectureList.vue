@@ -47,7 +47,7 @@
     export default {
         name: "ResultLectureList",
         props:[
-            "bus",
+            "breakTime",
             "category",
             "subcategory"
         ],
@@ -58,6 +58,7 @@
                 bottom: 0,
                 page: 1,
                 loading: false,
+                breakTimeList: '',
             }
         },
         mounted(){
@@ -72,20 +73,17 @@
         },//mounted
         methods:{
             add_lecture(lecture){
-                this.$store.dispatch("ADD_CLASS",lecture);
-                this.$bus.$emit('upload_class_list');
-
-                /*
-                this.$bus.$emit('add_lecture_from_category', lecture);
-                this.$bus.$emit('add_lecture', lecture);*/
+                this.$bus.$emit('result_upload_class_list');
+                this.$bus.$emit('result_add_lecture', lecture);
             },
             list_to_subcategory(){
-                this.$bus.$emit('list_to_subcategory');
+                this.$bus.$emit('result_list_to_subcategory');
             },
             get_data(){
                 this.loading = true;
+                console.log("수업시간",this.breakTime);
                 setTimeout(e => {
-                    axios.get('lectures/search/?category=' + this.category + '&subcategory=' + this.subcategory + '&page=' + this.page)
+                    axios.get('lectures/search/?category=' + this.category + '&subcategory=' + this.subcategory + '&page=' + this.page +'&timetable='+this.breakTime)
                         .then((response) => {
                             this.count = response.data.count;
                             for (let i = 0; i < response.data.results.length; i++) {

@@ -179,6 +179,7 @@
                     }
                 }
                 this.$bus.$emit('result_timetable_not_collided', lecture);
+                this.$store.dispatch('ADD_CLASS',lecture);
                 this.timetable_data = this.$store.getters.GET_TIMETABLE;
                 this.add_lecture_to_timetable(lecture);
             },

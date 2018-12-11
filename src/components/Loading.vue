@@ -26,6 +26,7 @@
             this.$bus.$on('get_fix_list', this.set_fix_list);
             this.$bus.$on('get_break_time', this.set_break_time_list);
             this.$bus.$on('get_select_list', this.set_select_list);
+            this.breakTimeList="";
             this.submit();
         },
         methods:{
@@ -53,34 +54,32 @@
             },
             set_break_time_list(breakTimeList){
                 console.log(breakTimeList);
-                for(let i = 0; i<breakTimeList.length; i++){
-                    if (breakTimeList[i].day !== "all"){
-                        this.breakTimeList+=String(breakTimeList[i].day);
-                        this.breakTimeList+=':';
-                    }
-                    if (breakTimeList[i].start_time){
-                        this.breakTimeList+=String(breakTimeList[i].start_time);
-                        this.breakTimeList+=':';
-                    }
-                    if (breakTimeList[i].end_time){
-                        this.breakTimeList+=String(breakTimeList[i].end_time);
-                        this.breakTimeList+=',';
-                    }
+                if(breakTimeList.length==0){
+                    this.breakTimeList = '';
                 }
-                this.breakTimeList = this.breakTimeList.slice(0,this.breakTimeList.length-1);
+                else{
+                    this.breakTimeList+='&timetable=';
+                    for(let i = 0; i<breakTimeList.length; i++){
+                        if (breakTimeList[i].day !== "all"){
+                            this.breakTimeList+=String(breakTimeList[i].day);
+                            this.breakTimeList+=':';
+                        }
+                        if (breakTimeList[i].start_time){
+                            this.breakTimeList+=String(breakTimeList[i].start_time);
+                            this.breakTimeList+=':';
+                        }
+                        if (breakTimeList[i].end_time){
+                            this.breakTimeList+=String(breakTimeList[i].end_time);
+                            this.breakTimeList+=',';
+                        }
+                    }
+                    this.breakTimeList = this.breakTimeList.slice(0,this.breakTimeList.length-1);
+                }
             },
             get_result(){
                 this.loading = true;
-                let breaktime;
-                if (this.breakTimeList){
-                    breaktime = "&timetable="+this.breakTimeList;
-                }
-                else {
-                    breaktime = "";
-                }
-                axios.get('lectures/query/?selected='+this.selectList+'&fixed='+this.fixList+breaktime)
+                axios.get('lectures/query/?selected='+this.selectList+'&fixed='+this.fixList +this.breakTimeList)
                     .then((response)=>{
-                        console.log(response);
                         this.timetables = response.data;
                         this.loading = false;
                         this.$store.dispatch("SET_RESULT",this.timetables);
