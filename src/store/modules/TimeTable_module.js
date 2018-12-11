@@ -30,12 +30,8 @@ const mutations = {
         state.points = points;
     },
     REMOVE_TIMETABLE(state, index){
-        console.log("before",state.result_extends);
-        state.result_extends.splice(state.result_extends.map((timetable)=> {return timetable.id}).indexOf(index), 1);
-        console.log("after",state.result_extends);
-
+        state.result_extends.splice(index, 1);
     }
-
 };
 
 const actions = {
@@ -61,7 +57,7 @@ const actions = {
 };
 
 const getters = {
-    GET_RESULT: function(state){
+    GET_RESULT: state => {
         return state.result_extends;
     },
     GET_ORIGINAL: state => {

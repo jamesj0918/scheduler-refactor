@@ -135,7 +135,7 @@
             add_breaktime(){
                 this.breaktime_count++;
                 this.breaktime_data.push({day: "", start_time : "", end_time: ""});
-                this.store.state.submit.breaktime_data++;
+                this.$store.state.submit.breaktime_data++;
             },
             sub_colon(time){
                 return time[0]+time[1]+time[3]+time[4];
@@ -143,7 +143,7 @@
             sub_choice(index){
                 this.breaktime_count--;
                 this.breaktime_data.splice(index,1);
-                this.store.state.submit.breaktime_data--;
+                this.$store.state.submit.breaktime_data--;
             },
             set_points(){
                 this.extra_points = this.points - this.subject_point;

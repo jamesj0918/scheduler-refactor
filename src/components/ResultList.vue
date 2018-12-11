@@ -40,15 +40,14 @@
                 this.timetables.splice(this.timetables.map((timetable)=> {return timetable.id}).indexOf(index), 1);
             },
             get_result_list(){
-
                 const timetables = this.$store.getters.GET_RESULT;
-                console.log("created",timetables);
                 for(let i=0; i<timetables.length; i++){
                     this.timetables.push({id : i, timetable: timetables[i]})
                 }
             }
         },
         mounted(){
+            console.log("hi");
             this.get_result_list();
         },
     }

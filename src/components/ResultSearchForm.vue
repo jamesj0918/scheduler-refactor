@@ -22,11 +22,26 @@
                                 <div class="LectureData" @click="add_lecture(lecture)" v-for="lecture in search_data">
                                     <div class="LectureTitle">{{lecture.title}}</div>
                                     <div class="LectureInfo">
-                                        {{lecture.professor}}, {{lecture.classroom}}, {{lecture.point}}
+                                        <div class="info">
+                                            {{lecture.professor}},
+                                        </div>
+                                        <div class="info" v-if="lecture.timetable.length!== 0">
+                                            {{lecture.classroom}},
+                                        </div>
+                                        <div class="info">
+                                            {{lecture.point}}학점
+                                        </div>
                                     </div>
                                     <div class="LectureTimeWrap">
-                                        <div class="LectureTime" v-for="time in lecture.timetable.slice().reverse()">
-                                            {{time.day}} {{time.start.split(":")[0]+":"+time.start.split(":")[1]}}~{{time.end.split(":")[0]+":"+time.end.split(":")[1]}}
+                                        <div v-if="lecture.timetable.length !== 0">
+                                            <div class="LectureTime" v-for="time in lecture.timetable.slice().reverse()">
+                                                {{time.day}} {{time.start.split(":")[0]+":"+time.start.split(":")[1]}}~{{time.end.split(":")[0]+":"+time.end.split(":")[1]}}
+                                            </div>
+                                        </div>
+                                        <div v-else>
+                                            <div class="LectureTime">
+                                                온라인
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -328,6 +343,11 @@
         border-radius: 5px;
         left: calc(50% - 50px);
         top: 40%;
+    }
+
+    .info{
+        display: inline-block;
+        width: auto;
     }
 
     .fade-enter-active, .fade-leave-active {
