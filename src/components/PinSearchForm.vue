@@ -103,7 +103,6 @@
             get_data(){
                 this.loading = true;
 
-                console.log(this.loading);
                 setTimeout(e => {
                     axios.get('lectures/search/?search='+this.query+'&page='+this.page)
                         .then((response)=> {

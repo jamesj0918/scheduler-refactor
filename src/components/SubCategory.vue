@@ -67,7 +67,6 @@
                 search_url = 'search';
             }
             this.loading = true;
-            console.log("hi");
 
             const category_modified = this.category.replace("/","_").replace("/","_");
             for(let i=0; i<this.subcategories[category_modified].length; i++){
