@@ -36,11 +36,7 @@
                     </div>
                 </v-tab>
             </vue-tabs>
-                <transition  name="fade" id="fade">
-                    <div class="loading" v-show="loading">
-                        <span class="fa fa-spinner fa-spin"></span> Loading
-                    </div>
-                </transition>
+
                 <div class="ListContent" id="select-search-list">
                     <div @click="remove_lecture_from_list(lecture)" class="LectureData" v-for="lecture in lecture_data">
                         <div class="MinusButton">
@@ -86,6 +82,7 @@
         methods:{
             search(){
                 this.page = 1;
+                this.search_data= [];
                 this.get_data();
             },
             get_data(){
