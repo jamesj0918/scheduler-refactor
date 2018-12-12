@@ -225,7 +225,7 @@
     }
     .ListContent{
         display: inline-block;
-        height: 150px;
+        height: 170px;
         width: 100%;
         overflow-y: scroll;
     }

@@ -9,7 +9,7 @@
                 {{category}} / {{subcategory}}
             </div>
             <div class="SubCategoryCount">
-                {{count}}개의 강의1
+                {{count}}개의 강의
             </div>
         </div>
         <transition name="fade" id="fade">

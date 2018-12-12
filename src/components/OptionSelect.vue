@@ -1,5 +1,6 @@
 <template>
     <div id="OptionSelectWrap">
+        <!--
         <div class="DepartmentSelect">
             학과 선택
             <label>
@@ -8,6 +9,7 @@
                 </select>
             </label>
         </div>
+        -->
         <br>
         <div class="PointSelect">
             학점 선택 <input @change="validate_points()" v-model="points" style="width: 30px" type="text">
@@ -135,7 +137,7 @@
             add_breaktime(){
                 this.breaktime_count++;
                 this.breaktime_data.push({day: "", start_time : "", end_time: ""});
-                this.store.state.submit.breaktime_data++;
+                this.$store.state.submit.breaktime_counts++;
             },
             sub_colon(time){
                 return time[0]+time[1]+time[3]+time[4];
@@ -143,7 +145,7 @@
             sub_choice(index){
                 this.breaktime_count--;
                 this.breaktime_data.splice(index,1);
-                this.store.state.submit.breaktime_data--;
+                this.$store.state.submit.breaktime_counts--;
             },
             set_points(){
                 this.extra_points = this.points - this.subject_point;

@@ -3,7 +3,7 @@
         <div style="display: inline-block; width: 734px;">
             <TimeTable style="display: inline-block; width: 434px; height: auto; float: left; "></TimeTable>
             <div style="display: flex; height: 10vh; float: right; width: 434px; ">
-                <button @click="submit" >submit</button>
+                <button @click="submit">submit</button>
             </div>
         </div>
         <div style="display:inline-block;">
@@ -37,6 +37,9 @@
                 let breaktime_counts = this.$store.state.submit.breaktime_counts;
                 if (pinned_counts > 0 && selected_counts > 0 && breaktime_counts >= 0) {
                     this.$router.push('/loading');
+                }
+                else if (breaktime_counts <= 0){
+                    alert('공강을 최소 1개 이상 선택해야 합니다!');
                 }
                 else{
                     alert('고정강의와 선택강의 모두 최소 1개 이상은 필요합니다!');
