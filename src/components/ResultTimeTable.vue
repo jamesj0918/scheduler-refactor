@@ -39,7 +39,7 @@
 
     export default {
         name: "TimeTable",
-        props: [ "timetable"],
+        props: ["timetable"],
         data(){
             return{
                 timetable_data: [],
@@ -178,14 +178,18 @@
                         }
                     }
                 }
-                this.$bus.$emit('timetable_not_collided', lecture);
-                this.timetable_data.push(lecture);
+                this.$bus.$emit('result_timetable_not_collided', lecture);
+                this.$store.dispatch('ADD_CLASS',lecture);
+                this.timetable_data = this.$store.getters.GET_TIMETABLE;
                 this.add_lecture_to_timetable(lecture);
             },
-            remove_lecture(lecture){
+            remove_lecture(lecture, index){
                 const timetable_index = this.timetable_data.indexOf(lecture);
                 if (timetable_index === -1) alert('옳바르지 않은 접근입니다.');
-                else this.timetable_data.splice(timetable_index, 1);
+                else {
+                    this.$store.dispatch('SUB_CLASS',index);
+                    this.timetable_data.splice(timetable_index, 1);
+                }
                 this.remove_lecture_from_timetable(lecture);
             }
         },
@@ -209,8 +213,8 @@
                 let tmp = 5+"_"+j;
                 this.$refs[tmp][0].style.borderRight = "solid 2px rgb(226, 226, 226)";
             }
-            this.$bus.$on('add_lecture', this.add_lecture);
-            this.$bus.$on('remove_lecture', this.remove_lecture);
+            this.$bus.$on('result_add_lecture', this.add_lecture);
+            this.$bus.$on('result_remove_lecture', this.remove_lecture);
         }
     }
 </script>

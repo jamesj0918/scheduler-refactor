@@ -1,24 +1,23 @@
 <template>
     <div>
-        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+        <div>
+            남은 학점: {{points}}
+        </div>
         <div class="SearchForm">
             <vue-tabs>
                 <v-tab icon="fas fa-search" title="">
                     <div class="TabContent">
                         <div class="SearchFormContent">
                             <div class="Search">
-                                <form v-on:submit.prevent="search">
-                                    <input placeholder="과목명/학과/교수님성함" type="text" v-model="query" class="SearchInput">
-                                    <i style="margin-top: 6px; cursor: pointer" @click="search" class="fas fa-search"></i>
-                                </form>
+                                <input placeholder="과목명/학수번호/교수님성함" type="text" v-model="query" class="SearchInput">
+                                <i style="margin-top: 6px; cursor: pointer" @click="search" class="fas fa-search"></i>
                             </div>
-                            <transition  name="fade" id="fade">
-                                <div class="loading" v-show="loading">
-                                    <span class="fa fa-spinner fa-spin"></span> Loading
-                                </div>
-                            </transition>
-                            <div class="LectureContent" id="pin-search-list">
-
+                            <div class="LectureContent" id="result-search-list">
+                                <transition  name="fade" id="fade">
+                                    <div class="loading" v-show="loading">
+                                        <span class="fa fa-spinner fa-spin"></span> Loading
+                                    </div>
+                                </transition>
                                 <div class="LectureData" @click="add_lecture(lecture)" v-for="lecture in search_data">
                                     <div class="LectureTitle">{{lecture.title}}</div>
                                     <div class="LectureInfo">
@@ -32,8 +31,8 @@
                                             {{lecture.point}}학점
                                         </div>
                                     </div>
-                                    <div class="LectureTimeWrap" >
-                                        <div v-if="lecture.timetable.length !== 0">
+                                    <div class="LectureTimeWrap">
+                                        <div v-if="lecture.timetable.length !==0">
                                             <div class="LectureTime" v-for="time in lecture.timetable.slice().reverse()">
                                                 {{time.day}} {{time.start.split(":")[0]+":"+time.start.split(":")[1]}}~{{time.end.split(":")[0]+":"+time.end.split(":")[1]}}
                                             </div>
@@ -55,20 +54,19 @@
                             v-if="layer === 1"
                             :select_option="'pin'"
                             :category="this.push_category">
-
                         </SubCategory>
-                        <PinLectureList
+                        <ResultLectureList
                             v-if="layer === 2"
-
+                            :breakTime="this.breakTimeList"
                             :category="this.push_category"
                             :subcategory="this.push_subcategory">
-                        </PinLectureList>
+                        </ResultLectureList>
                     </div>
-                 </v-tab>
+                </v-tab>
             </vue-tabs>
             <div class="ListContent">
-                <div class="LectureData" @click="remove_lecture(lecture)" v-for="lecture in lecture_data">
-                    <div class="MinusButton">
+                <div class="LectureData" @click="remove_lecture(lecture,index)" v-for="(lecture,index) in lecture_data">
+                    <div class="MinusButton" v-show="index>=counts">
                         <i class="fas fa-minus-circle"></i>
                     </div>
                     <div class="LectureTitle">{{lecture.title}}</div>
@@ -84,15 +82,9 @@
                         </div>
                     </div>
                     <div class="LectureTimeWrap" >
-                        <div v-if="lecture.timetable.length !== 0">
-                            <div class="LectureTime" v-for="time in lecture.timetable.slice().reverse()">
-                                {{time.day}} {{time.start.split(":")[0]+":"+time.start.split(":")[1]}}~{{time.end.split(":")[0]+":"+time.end.split(":")[1]}}
-                            </div>
+                        <div class="LectureTime" v-for="time in lecture.timetable.slice().reverse()">
+                            {{time.day}} {{time.start.split(":")[0]+":"+time.start.split(":")[1]}}~{{time.end.split(":")[0]+":"+time.end.split(":")[1]}}
                         </div>
-                        <div v-else class="LectureTime">
-                            온라인
-                        </div>
-
                     </div>
                 </div>
             </div>
@@ -104,11 +96,11 @@
     import axios from 'axios';
     import Category from './Category';
     import SubCategory from "./SubCategory";
-    import PinLectureList from "./PinLectureList";
+    import ResultLectureList from "./ResultLectureList";
     export default {
-        name: "PinSearchForm",
+        name: "SearchForm",
         components:{
-            PinLectureList,
+            ResultLectureList,
             SubCategory,
             Category,
         },
@@ -120,9 +112,13 @@
                 layer: 0,
                 push_category: '',
                 push_subcategory: '',
+                breakTimeList: '',
                 page: 0,
                 bottom: 0,
+                counts: 0,
                 loading: false,
+                points: 0,
+                resultIndex: this.$route.params.result_index,
             }
         },//data
         methods:{
@@ -134,34 +130,36 @@
             get_data(){
                 this.loading = true;
 
-
-                    axios.get('lectures/search/?search=' + this.query + '&page=' + this.page)
-                        .then((response) => {
-                            for (let i = 0; i < response.data.results.length; i++) {
-                                this.search_data.push(response.data.results[i]);
-
-                            }
-                            console.log(this.loading);
+                setTimeout(e => {
+                    axios.get('lectures/search/?timetable='+this.breakTimeList+'&search='+this.query+'&page='+this.page)
+                        .then((response)=>{
+                                for (let i = 0; i < response.data.results.length; i++) {
+                                    if(this.points >= response.data.results[i].point){
+                                        this.search_data.push(response.data.results[i]);
+                                    }
+                                }
+                            });
                             this.loading = false;
                             this.page++;
-                        });
-
+                    },500);
             },
             add_lecture(lecture){
-                this.$bus.$emit('add_lecture', lecture);
-            },
-            add_lecture_to_list(lecture){
                 if (this.lecture_data.indexOf(lecture) === -1) {
-                    this.lecture_data.push(lecture);
-                    this.$store.state.submit.pinned_counts++;
+                    this.$bus.$emit('result_add_lecture', lecture);
                 }
                 else alert('이미 추가된 강의입니다!');
             },
-            remove_lecture(lecture){
-                const index = this.lecture_data.indexOf(lecture);
-                this.lecture_data.splice(index, 1);
-                this.$store.state.submit.pinned_counts--;
-                this.$bus.$emit('remove_lecture', lecture);
+            add_lecture_to_list(lecture){
+                this.get_time_table();
+
+            },
+            remove_lecture(lecture, index){
+
+                //const index = this.lecture_data.indexOf(lecture);
+                //this.lecture_data.splice(index, 1);
+                this.$bus.$emit('result_remove_lecture', lecture, index);
+
+                this.get_time_table();
             },
             category_to_subcategory(category) {
                 this.push_category = category;
@@ -189,22 +187,55 @@
                 var bottomOfPage = visible + scrollY >= pageHeight;
                 return bottomOfPage || pageHeight < visible;
             },
+            add_break_time(timetable){
+                if(timetable.day == '월') this.breakTimeList+="mon";
+                if(timetable.day == '화') this.breakTimeList+="tue";
+                if(timetable.day == '수') this.breakTimeList+="wed";
+                if(timetable.day == '목') this.breakTimeList+="thu";
+                if(timetable.day == '금') this.breakTimeList+="fri";
+
+                this.breakTimeList += ":" ;
+
+                this.breakTimeList+=this.sub_colon(timetable.start);
+                this.breakTimeList += ":" ;
+                this.breakTimeList+=this.sub_colon(timetable.end);
+                this.breakTimeList+=',';
+            },
+            sub_colon(time){
+                return time[0]+time[1]+time[3]+time[4];
+            },
+            get_time_table() {
+                this.lecture_data = [];
+                this.breakTimeList = '';
+                this.points = this.$store.getters.GET_POINTS;
+                this.lecture_data = this.$store.getters.GET_TIMETABLE;
+                for (let i = 0; i < this.lecture_data.length; i++) {
+                    this.points -= parseFloat(this.lecture_data[i].point);
+                    for (let j = 0; j < this.lecture_data[i].timetable.length; j++) {
+                        this.add_break_time(this.lecture_data[i].timetable[j]);
+                    }
+                }
+                this.breakTimeList = this.breakTimeList.slice(0, this.breakTimeList.length - 1);
+
+            }
         },//methods
         mounted() {
-            const listElm = document.querySelector('#pin-search-list');
+            const listElm = document.querySelector('#result-search-list');
             listElm.addEventListener( 'scroll',e =>{
                 if(listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight) {
-                    this.loading=true;
                     this.get_data();
                 }
             });
-
+            this.get_time_table();
+            this.points = this.$store.getters.GET_POINTS;
+            this.counts = this.$store.getters.GET_LENGTH;
             this.$bus.$on('category_to_subcategory', this.category_to_subcategory);
             this.$bus.$on('subcategory_to_category', this.subcategory_to_category);
             this.$bus.$on('subcategory_to_list', this.subcategory_to_list);
-            this.$bus.$on('list_to_subcategory', this.list_to_subcategory);
-            this.$bus.$on('timetable_not_collided', this.add_lecture_to_list);
+            this.$bus.$on('result_list_to_subcategory', this.list_to_subcategory);
+            this.$bus.$on('result_timetable_not_collided', this.add_lecture_to_list);
             this.$bus.$on('get_result',this.get_fix_lecture);
+            this.$bus.$on('result_upload_class_list',this.get_time_table());
         },//mounted
     }
 </script>
@@ -225,7 +256,6 @@
     }
     .SearchFormContent{
         display: inline-block;
-        position: relative;
         width: 310px;
         height: 250px;
         margin: 0 auto;
@@ -250,10 +280,10 @@
         font-weight: bolder;
         color: rgb(128, 128, 128);
         outline: none;
-        margin-top: 1vh;
     }
     .LectureContent{
         display: inline-block;
+        position: relative;
         height: 205px;
         width: 100%;
         overflow-y: scroll;
@@ -313,11 +343,6 @@
         overflow-y: scroll;
     }
 
-    .info{
-        display:inline-block;
-        width: auto;
-    }
-
     .loading {
         text-align: center;
         position: absolute;
@@ -335,5 +360,9 @@
     }
     .fade-enter, .fade-leave-to {
         opacity: 0
+    }
+    .info{
+        display: inline-block;
+        width: auto;
     }
 </style>

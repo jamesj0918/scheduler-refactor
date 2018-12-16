@@ -2,9 +2,11 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 //Components
-import OptionSelect from './components/OptionSelect'
-import TimeTable from './components/TimeTable'
 import OptionSelectLayout from './components/OptionSelectLayout'
+import ResultList from "./components/ResultList";
+import Result from "./components/Result"
+import ResultLayout from "./components/ResultLayout"
+import Loading from './components/Loading'
 
 Vue.use(Router);
 
@@ -19,8 +21,26 @@ export default new Router({
         },
         {
             path: '/result',
-            name: 'TimeTable',
-            component: TimeTable
+            name: 'ResultLayout',
+            component: ResultLayout,
+            children:[
+                {
+                    path: '/',
+                    name: 'ResultList',
+                    component: ResultList,
+                },
+                {
+                    path: ':result_index',
+                    name: 'Result',
+                    props: true,
+                    component: Result,
+                }
+            ]
+        },
+        {
+            path: '/loading',
+            name: 'Loading',
+            component: Loading,
         }
     ]
 })
