@@ -1,7 +1,7 @@
 <template>
     <div>
         <div>
-            남은 학점: {{points}}
+            남은 학점: {{points - add_points}}
         </div>
         <div class="SearchForm">
             <vue-tabs>
@@ -120,6 +120,7 @@
                 counts: 0,
                 loading: false,
                 points: 0,
+                add_points: 0,
                 resultIndex: this.$route.params.result_index,
             }
         },//data
@@ -153,7 +154,8 @@
             },
             add_lecture_to_list(lecture){
                 this.get_time_table();
-
+                console.log(lecture);
+                this.add_points += lecture.point;
             },
             remove_lecture(lecture, index){
 
@@ -162,6 +164,7 @@
                 this.$bus.$emit('result_remove_lecture', lecture, index);
 
                 this.get_time_table();
+                this.add_points -= lecture.point;
             },
             category_to_subcategory(category) {
                 this.push_category = category;
